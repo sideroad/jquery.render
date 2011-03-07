@@ -13,10 +13,12 @@
         <script type="text/javascript">
             $(document.body).ready(function(){
                 $("#re1").render("tem/test.tem",{message:"Hello World!"});
-                $("#re2").render("<h1>${message}</h1>",{message:"Hello Goodbye!"});
+                $("#re2").render("<h2>${title}</h2>",{title:"jQuery plugin"});
+                $("#re3").render("<ul>${childrens}.each(<li>${i}</li>)</ul>",{childrens:["jquery.ui","jquery.sidebar","jquery.textanimation","jquery.floatingmessage"]});
             });
         </script>
         <div id="re1"></div>
         <div id="re2"></div>
+        <div id="re3"></div>
     </body>
 </html>

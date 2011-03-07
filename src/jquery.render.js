@@ -2,7 +2,7 @@
  * jquery.render v1.0.1
  * http://sideroad.secret.jp/
  *
- * Render template engine plugin
+ * Template render plugin
  * 
  * Copyright (c) 2011 sideroad
  *
@@ -62,16 +62,18 @@
      */
     $.fn.render = function( t, o ){
         return this.each( function(){
+            var e = $(this);
             if( /\.tem$/.test( t ) ){
                 if( cache[t] ) {
-                    $(this).html( bind( cache[t], o ) );
+                    e.html( bind( cache[t], o ) );
                 } else {
-                    $.get( t, function( t ){
-                        $(this).html( bind( t, o ) );
+                    $.get( t, function( tem ){
+                        e.html( bind( tem, o ) );
+                        cache[t] = tem;
                     });
                 }
             } else {
-                $(this).html( bind( t, o ) );
+                e.html( bind( t, o ) );
             }
             
         });
