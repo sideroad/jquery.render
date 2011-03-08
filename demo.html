@@ -12,13 +12,33 @@
         <b style="font-size:80px;position:absolute;top:42%;left:28%;" >jquery.render</b>
         <script type="text/javascript">
             $(document.body).ready(function(){
-                $("#re1").render("tem/test.tem",{message:"Hello World!"});
-                $("#re2").render("<h2>${title}</h2>",{title:"jQuery plugin"});
-                $("#re3").render("<ul>${childrens}.each(<li>${i}</li>)</ul>",{childrens:["jquery.ui","jquery.sidebar","jquery.textanimation","jquery.floatingmessage"]});
+                var obj = {
+                    message:"Hello World!", 
+                    title:"jQuery plugin", 
+                    plugins:["jquery.ui","jquery.sidebar","jquery.textanimation","jquery.floatingmessage"],
+                    fruits : [
+                        {name : "Apple", amount : 10},
+                        {name : "Grape", amount : 20},
+                        {name : "Lemon", amount : 30}
+                    ]
+                };
+                
+                var ajaxOptions = {
+                    type : "POST",
+                    success : function(){
+                      window.alert("finish!")
+                    }
+                };
+                
+                $("#re1").render("tem/test.tem",obj);
+                $("#re2").render("<h2>${title}</h2>",obj);
+                $("#re3").render("<ul>${plugins}.each(<li>${i}</li>)</ul>",obj);
+                $("#re4").render("<ul>${fruits}.each(<li>${i.name} : ${i.amount}</li>)</ul>",obj,ajaxOptions);
             });
         </script>
         <div id="re1"></div>
         <div id="re2"></div>
         <div id="re3"></div>
+        <div id="re4"></div>
     </body>
 </html>

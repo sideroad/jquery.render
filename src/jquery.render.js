@@ -1,5 +1,5 @@
 /*
- * jquery.render v1.0.1
+ * jquery.render v1.1.1
  * http://sideroad.secret.jp/
  *
  * Template render plugin
@@ -58,19 +58,36 @@
      * 
      * @param {String} Template URL or template string
      * @param {Object} Source object
+     * @param {Object} Ajax options( ommitable )
      * @returns jQuery object
      */
-    $.fn.render = function( t, o ){
+    $.fn.render = function( t, o, a ){
+        a = a || {};
+        
         return this.each( function(){
-            var e = $(this);
+            var e = $(this),
+                callback,
+                options;
             if( /\.tem$/.test( t ) ){
                 if( cache[t] ) {
                     e.html( bind( cache[t], o ) );
                 } else {
-                    $.get( t, function( tem ){
-                        e.html( bind( tem, o ) );
-                        cache[t] = tem;
-                    });
+                    callback = a.success;
+
+                    $.ajax( $.extend(
+                        {
+                            type : "GET",
+                            url : t
+                        },
+                        a,
+                        {
+                            success : function( tem ){
+                                e.html( bind( tem, o ) );
+                                cache[t] = tem;
+                                if ( callback ) callback();
+                            }
+                        }
+                    ) );
                 }
             } else {
                 e.html( bind( t, o ) );
