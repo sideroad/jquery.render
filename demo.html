@@ -30,10 +30,10 @@
                     }
                 };
                 
-                $("#re1").render("tem/test.tem",obj);
+                $("#re1").render("<h1>${message}</h1>",obj);
                 $("#re2").render("<h2>${title}</h2>",obj);
                 $("#re3").render("<ul>${plugins}.each(<li>${i}</li>)</ul>",obj);
-                $("#re4").render("<ul>${fruits}.each(<li>${i.name} : ${i.amount}</li>)</ul>",obj,ajaxOptions);
+                $("#re4").render("tem/test.tem",obj,ajaxOptions);
             });
         </script>
         <div id="re1"></div>
