@@ -4,7 +4,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>jquery.render.js</title>
-        <script type="text/javascript"  src="lib/jquery.min.js"></script>
+        <script type="text/javascript" src="lib/jquery-1.4.4.min.js"></script>
         <script type="text/javascript" src="src/jquery.render.js"></script>
 
     </head>
@@ -16,41 +16,29 @@
                     message:"Hello World!", 
                     title:"jQuery plugin", 
                     plugins:["jquery.ui","jquery.sidebar","jquery.textanimation","jquery.floatingmessage"],
-                    creature : {
-                        human : {
-                            walk : "slow",
-                            speakable : "yes"
-                        },
-                        dog : {
-                            walk : "fast",
-                            speakable : "no"
-                        }
-                    },
                     fruits : [
                         {name : "Apple", amount : 10},
                         {name : "Grape", amount : 20},
                         {name : "Lemon", amount : 30}
                     ]
-                    
                 };
                 
+                var ajaxOptions = {
+                    type : "POST",
+                    success : function(){
+                      window.alert("finish!")
+                    }
+                };
                 
                 $("#re1").render("<h1>${message}</h1>",obj);
                 $("#re2").render("<h2>${title}</h2>",obj);
-                $("#re3").render("<ul>${plugins}.each(<li>$val</li>)</ul>",obj);
-                $("#re4").render("<div><h3>Human</h3>${creature.human}.each(<dl><dt>$key</dt><dd>$val</dd>)</dl></div>",obj);
-                $("#re5").render({
-                    url : "tem/demo.tem",
-                    success : function(){
-                      window.alert("rendered!")
-                    }
-                },obj);
+                $("#re3").render("<ul>${plugins}.each(<li>${i}</li>)</ul>",obj);
+                $("#re4").render("tem/test.tem",obj,ajaxOptions);
             });
         </script>
         <div id="re1"></div>
         <div id="re2"></div>
         <div id="re3"></div>
         <div id="re4"></div>
-        <div id="re5"></div>
     </body>
 </html>
