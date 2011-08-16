@@ -1,7 +1,0 @@
-<div>$w{hello}</div>
-<dl>
-  <dt>$w{user.id}</dt>
-  <dd><input type="text"></dd>
-  <dt>$w{user.pw}</dt>
-  <dd><input type="password"></dd>
-</dl>

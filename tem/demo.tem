@@ -1,1 +1,0 @@
-<ul>${fruits}.each(<li>${name} : ${amount}</li>)</ul>
