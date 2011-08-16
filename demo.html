@@ -38,7 +38,7 @@
                 $("#re1").render("<h1>${message}</h1>",obj);
                 $("#re2").render("<h2>${title}</h2>",obj);
                 $("#re3").render("<ul>${plugins}.each(<li>$val</li>)</ul>",obj);
-                $("#re4").render("<div><h3>Human</h3>${creature.human}.each(<dl>$map.each(<dt>$key</dt><dd>$val</dd>)</dl></div>",obj);
+                $("#re4").render("<div><h3>Human</h3><dl>${creature.human}.each(<dt>$key</dt><dd>$val</dd>)</dl></div>",obj);
                 $("#re5").render({
                     url : "tem/demo.tem",
                     success : function(){
