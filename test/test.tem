@@ -1,1 +1,1 @@
-<div>${this}.each(<p>$key is $val.</p>)</div>
+<div>${this}.each({<p>$key is $val.</p>})</div>

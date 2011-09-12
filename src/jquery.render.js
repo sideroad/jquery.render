@@ -1,5 +1,5 @@
 /*!
- * jquery.render v1.2.1
+ * jquery.render v1.2.2
  * http://sideroad.secret.jp/
  *
  * Template render plugin
@@ -37,7 +37,7 @@
             }            
         },
         bind = function( template, source ){
-            var text =  template.replace( /\$\{([^\}]+)\}\.each\(([^\)]+)\)/g, function( word, key, child ){
+            var text =  template.replace( /\$\{([^\}]+)\}\.each\(\{([^\)]+)\}\)/g, function( word, key, child ){
                 var val = ( key == "this" ) ? source : seek( source, key.replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) ),
                     i = 0,
                     length,
@@ -70,7 +70,7 @@
                 }
                 return text;
             }).replace( /\$\{([^\}]+)\}/g, function( word, key ){
-                return seek( source, key.replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) );
+                return seek( source, key.replace(/^this/, "" ).replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) );
             });
             
             if( isLoaded[ language ] ) {
@@ -78,13 +78,6 @@
             }
             return text;
             
-        },
-        wordReady = function( f ){
-            if( !isLoading[ language ] ){
-                f();
-                return;
-            } 
-            setTimeout( wordReady,100,f );
         },
         wordReplace = function( text ){
             var words = word[ language ];
@@ -121,20 +114,16 @@
             return this.each( function(){
                 var elem = $(this);
                 if( cache[ url ] ) {
-                    wordReady(function(){
-                        elem.html( bind( cache[ url ], source ) );
-                        if ( callback ) callback();
-                    });
+                    elem.html( bind( cache[ url ], source ) );
+                    if ( callback ) callback();
                 } else {
                     $.ajax( $.extend( true, ajax, {
                         dataType : "text",
                         success : function( template ){
                             var text = bind( template, source );
-                            wordReady( function(){
-                                elem.html( text );
-                                cache[ url ] = template;
-                                if ( callback ) callback();
-                            });
+                            elem.html( text );
+                            cache[ url ] = template;
+                            if ( callback ) callback();
                         }
                     }));
                 }
@@ -143,27 +132,28 @@
             return this.each( function(){
                 var elem = $(this);
                 var text = bind( template, source );
-                wordReady( function(){
-                    elem.html( text );
-                });
+                elem.html( text );
             } );
         }
     };
     
 
     /*
-     * $.loadWordSetting
+     * $.word
      * Load a word setting file
      * Language is automatically taken by navigator object, which you omit a set language.
      *   @param {Object} word files URL
      *       exp)
      *       { en : "word.en", ja : "word.ja"}
-     *   @param {String} Language (Omittable)
-     *       Explicit language
+     *   @param {String} Default Language ( Omittable )
+     *   @param {String} Fixed Language ( Omittable )
+     *   @param {Function} Callback function ( Omittable )
+     *       Explicitly set language
      */
-    $.loadWordSetting = function( urls, lang ){
-        lang = lang || (navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);
-        language = lang = ( urls[ lang ] ) ? lang : "en";
+    $.word = function( urls, def, fixed, callback ){
+        lang = fixed || (navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);
+        language = lang = ( urls[ lang ] ) ? lang : 
+                                   ( urls[def] ) ? def : "en";
         
         if( word[ lang ] ) {
             return;
@@ -184,6 +174,7 @@
                 }
                 isLoading[ lang ] = false;
                 isLoaded[ lang ] = true;
+                callback();
             }
         });
         }
