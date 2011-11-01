@@ -17,6 +17,7 @@
 (function( $ ) {
     var cache = {},
         word = {},
+		suffix = "",
         isLoaded = {},
         isLoading = {},
         language = "en",
@@ -117,15 +118,19 @@
                     elem.html( bind( cache[ url ], source ) );
                     if ( callback ) callback();
                 } else {
-                    $.ajax( $.extend( true, ajax, {
-                        dataType : "text",
-                        success : function( template ){
-                            var text = bind( template, source );
-                            elem.html( text );
-                            cache[ url ] = template;
-                            if ( callback ) callback();
+                    $.ajax( $.extend( true, {
+				    		url : url + suffix
+					    },
+					    ajax, {
+                            dataType : "text",
+                            success : function( template ){
+                                var text = bind( template, source );
+                                elem.html( text );
+                                cache[ url ] = template;
+                                if ( callback ) callback();
+                            }
                         }
-                    }));
+					));
                 }
             });
         } else {
@@ -179,6 +184,27 @@
         });
         }
     };
+	
+	/*
+	 * Set render file suffix which called ajax render request
+     *   @param {Object} suffix conditions
+     *   @param {Object} userAgent
+     *       exp)
+     *       { "an" : /Android/, "ip" : /iPhone|iPad/ }
+	 */
+	$.renderSuffix = function( options ){
+		options = options || {};
+		var uas = options.userAgent || {},
+		    key = null,
+			ua = navigator.userAgent;
+		
+		for( key in uas ){
+			if( uas[ key ].test( ua ) ){
+				suffix =  key;
+			}
+		}
+		
+	};
     
     /*
      * Unlocalize for QUnit

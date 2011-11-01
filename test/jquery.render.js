@@ -203,6 +203,31 @@ asyncTest("word-setting-ja", function(){
     
 });
 
+asyncTest("suffix-userAgent-match", function(){
+    expect( 1 );
+    $.renderSuffix( { ".match" : /Mozilla|Konqueror|Opera|iCab|Lynx/ } );
+    $("#ren").render({
+        url : "suffix.tem.match",
+        success : function(){
+            equals( $("#ren").html(), 
+                "<div>Match</div>");
+            start();
+        }
+    });
+});
+
+asyncTest("suffix-userAgent-nomatch", function(){
+    expect( 1 );
+    $.renderSuffix( { ".non" : /NotMatchAgent/ } );
+    $("#ren").render({
+        url : "suffix.tem",
+        success : function(){
+            equals( $("#ren").html(), 
+                "<div>No Match</div>");
+            start();
+        }
+    });
+});
 
 test("inception ( Local )", function(){
     var obj = { d : 1, e : [ true, false ]};
