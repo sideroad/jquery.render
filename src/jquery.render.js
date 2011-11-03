@@ -1,5 +1,5 @@
 /*!
- * jquery.render v1.2.2
+ * jquery.render v1.2.3
  * http://sideroad.secret.jp/
  *
  * Template render plugin
@@ -109,8 +109,9 @@
         }
 
         if( ajax ){
-            url = ajax.url;
+            url = ajax.url + suffix;
             callback = ajax.success;
+                    console.log(url);
             
             return this.each( function(){
                 var elem = $(this);
@@ -118,10 +119,9 @@
                     elem.html( bind( cache[ url ], source ) );
                     if ( callback ) callback();
                 } else {
-                    $.ajax( $.extend( true, {
-				    		url : url + suffix
-					    },
+                    $.ajax( $.extend( true, 
 					    ajax, {
+							url : url,
                             dataType : "text",
                             success : function( template ){
                                 var text = bind( template, source );
@@ -187,19 +187,17 @@
 	
 	/*
 	 * Set render file suffix which called ajax render request
-     *   @param {Object} suffix conditions
-     *   @param {Object} userAgent
+     *   @param {Object} userAgents setting
      *       exp)
-     *       { "an" : /Android/, "ip" : /iPhone|iPad/ }
+     *       { ".an" : /Android/, ".ip" : /iPhone|iPad/ }
 	 */
-	$.renderSuffix = function( options ){
-		options = options || {};
-		var uas = options.userAgent || {},
-		    key = null,
-			ua = navigator.userAgent;
+	$.renderSuffix = function( userAgent ){
+		userAgent = userAgent || {};
+		var key = null,
+			ua = $.__render__.userAgent;
 		
-		for( key in uas ){
-			if( uas[ key ].test( ua ) ){
+		for( key in userAgent ){
+			if( userAgent[ key ].test( ua ) ){
 				suffix =  key;
 			}
 		}
@@ -212,7 +210,8 @@
     $.__render__ = {
             seek : seek,
             inception : inception,
-            word : word
+            word : word,
+			userAgent : navigator.userAgent
     };
 
     

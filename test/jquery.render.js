@@ -145,7 +145,7 @@ asyncTest( "ajax", function(){
     expect( 1 );
     
     $("#ren").render({
-        url : "test.tem",
+        url : "test.ren",
         success : function(){
             equals( $("#ren").html() ,"<div><p>name is Amber.</p><p>age is 4.</p><p>type is mix.</p></div>" );
             start();
@@ -162,7 +162,7 @@ asyncTest("word-setting-en", function(){
         ja : "word.ja"
     } , "en", "en",function(){
 	    $("#ren").render({
-	        url : "word.tem",
+	        url : "word.ren",
 	        success : function(){
 	            equals( $("#ren").html(), 
 	                "<div>Hello World!</div>\n" + 
@@ -186,7 +186,7 @@ asyncTest("word-setting-ja", function(){
         ja : "word.ja"
     } , "ja", "ja",function(){
 	    $("#ren").render({
-	        url : "word.tem",
+	        url : "word.ren",
 	        success : function(){
 	            equals( $("#ren").html(), 
 	                "<div>こんにちわ</div>\n" + 
@@ -203,30 +203,34 @@ asyncTest("word-setting-ja", function(){
     
 });
 
-asyncTest("suffix-userAgent-match", function(){
+asyncTest("suffix-userAgent-Chrome", function(){
     expect( 1 );
-    $.renderSuffix( { ".match" : /Mozilla|Konqueror|Opera|iCab|Lynx/ } );
+	$.__render__.userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.106 Safari/535.2";
+    $.renderSuffix( { ".gc" : /Chrome/, ".ff" : /Firefox/, ".ie" : /MSIE/, ".ip" : /iPhone/, ".ipd" : /iPad/ } );
     $("#ren").render({
-        url : "suffix.tem.match",
+        url : "suffix.ren",
         success : function(){
             equals( $("#ren").html(), 
-                "<div>Match</div>");
+                "<div>Chrome</div>");
             start();
         }
     });
+	$.renderSuffix();
 });
 
-asyncTest("suffix-userAgent-nomatch", function(){
+asyncTest("suffix-userAgent-iPhone", function(){
     expect( 1 );
-    $.renderSuffix( { ".non" : /NotMatchAgent/ } );
+    $.__render__.userAgent = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_2_1 like Mac OS X; ja-jp) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8C148 Safari/6531.22.7";
+    $.renderSuffix( { ".gc" : /Chrome/, ".ff" : /Firefox/, ".ie" : /MSIE/, ".ip" : /iPhone/, ".ipd" : /iPad/ } );
     $("#ren").render({
-        url : "suffix.tem",
+        url : "suffix.ren",
         success : function(){
             equals( $("#ren").html(), 
-                "<div>No Match</div>");
+                "<div>iPhone</div>");
             start();
         }
     });
+    $.renderSuffix();
 });
 
 test("inception ( Local )", function(){
