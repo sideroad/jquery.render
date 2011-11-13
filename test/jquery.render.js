@@ -49,8 +49,23 @@ var listedList = [
 var notExists = {
 	name : null,
 	age : undefined
-}
+};
 
+var escapeHTML = {
+    name : '<span>"&"</span>',
+    list : [ '<span>"&"</span>'],
+    map : {
+        name : '<span>"&"</span>'
+    }
+};
+
+var raw = {
+    name : '<span>"&"</span>',
+    list : [ '<span>"&"</span>'],
+    map : {
+        name : '<span>"&"</span>'
+    }
+};
 
 test( "property", function() {
     expect( 9 );
@@ -139,6 +154,33 @@ test( "each", function() {
 //    equals($( "#ren" ).render( "${this}.each(<p>${this}.each(<span>$val</span>)</p>)", listedList ).html(),
 //                                  "<p><span>Amber</span><span>Maruchan</span></p>" +
 //                                  "<p><span>Kamekichi</span><span>Kameko</span></p>");
+});
+
+test( "escapeHTML", function() {
+    expect( 1 );
+    equals($( "#ren" ).render( "<p>${name}</p>"+
+                                                 "<p>${list[0]}</p>"+
+                                                 "<p>${map.name}</p>"+
+                                                 "${list}.each({<p>$val</p>})"+
+                                                 "${map}.each({<p>$val</p>})", escapeHTML ).html(),
+                                                "<p>&lt;span&gt;\"&amp;\"&lt;/span&gt;</p>"+
+                                                "<p>&lt;span&gt;\"&amp;\"&lt;/span&gt;</p>"+
+                                                "<p>&lt;span&gt;\"&amp;\"&lt;/span&gt;</p>"+
+                                                "<p>&lt;span&gt;\"&amp;\"&lt;/span&gt;</p>"+
+                                                "<p>&lt;span&gt;\"&amp;\"&lt;/span&gt;</p>");
+});
+test( "raw", function() {
+    expect( 1 );
+    equals($( "#ren" ).render( "<p>$r{name}</p>"+
+                                                 "<p>$r{list[0]}</p>"+
+                                                 "<p>$r{map.name}</p>"+
+                                                 "${list}.each({<p>$rval</p>})"+
+                                                 "${map}.each({<p>$rval</p>})", raw )[0].innerHTML,
+                                                "<p><span>\"&amp;\"</span></p>"+
+                                                "<p><span>\"&amp;\"</span></p>"+
+                                                "<p><span>\"&amp;\"</span></p>"+
+                                                "<p><span>\"&amp;\"</span></p>"+
+                                                "<p><span>\"&amp;\"</span></p>");
 });
 
 asyncTest( "ajax", function(){

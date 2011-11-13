@@ -1,5 +1,5 @@
 /*!
- * jquery.render v1.2.3
+ * jquery.render v1.2.4
  * http://sideroad.secret.jp/
  *
  * Template render plugin
@@ -37,42 +37,51 @@
                 return arguments.callee( obj[ key ], keys, val );
             }            
         },
+		escapeHTML = function( s ){
+            return String( s ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        },
         bind = function( template, source ){
             var text =  template.replace( /\$\{([^\}]+)\}\.each\(\{([^\)]+)\}\)/g, function( word, key, child ){
-                var val = ( key == "this" ) ? source : seek( source, key.replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) ),
-                    i = 0,
-                    length,
-                    childVal,
-                    text = "";
-                
-                if( val instanceof Array ) {
-                    length = val.length;
-                    for( i = 0; i<length; i++ ) {
-                        childVal = val[ i ];
-                        text += child.replace( /\${([^\}]+)}/g, function( word, childKey ){
-                            var index = childKey.match( /\[(\d+)\]/ );
-                            if ( index && index[ 1 ] ) {
-                                childKey = index[ 1 ];
-                            }
-                            return childVal[ childKey ];
-                        }).replace( /\$val/g, childVal );
-                    }
-                } else if( typeof val === "object" ) {
-                    for( key in val ) {
-                        childVal = val[ key ];
-                        text += child.replace( /\${([^\}]+)}/g, function( word, childKey ){
-                            var index = childKey.match( /\[(\d+)\]/ );
-                            if ( index && index[ 1 ] ) {
-                                childKey = index[ 1 ];
-                            }
-                            return childVal[ childKey ];
-                        }).replace( /\$val/g, childVal ).replace( /\$key/g, key );
-                    }
-                }
-                return text;
-            }).replace( /\$\{([^\}]+)\}/g, function( word, key ){
-                return seek( source, key.replace(/^this/, "" ).replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) );
-            });
+	                var val = ( key == "this" ) ? source : seek( source, key.replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) ),
+	                    i = 0,
+	                    length,
+	                    childVal,
+	                    text = "";
+	                
+	                if( val instanceof Array ) {
+	                    length = val.length;
+	                    for( i = 0; i<length; i++ ) {
+	                        childVal = val[ i ];
+	                        text += child.replace( /\$(r?){([^\}]+)}/g, function( word, isRaw, childKey ){
+	                            var index = childKey.match( /\[(\d+)\]/ );
+	                            if ( index && index[ 1 ] ) {
+	                                childKey = index[ 1 ];
+	                            }
+	                            return isRaw ? childVal[ childKey ] : escapeHTML( childVal[ childKey ] );
+	                        }).replace( /\$(r?)val/g, function( word, isRaw ){
+								return isRaw ? childVal : escapeHTML( childVal );
+							});
+	                    }
+	                } else if( typeof val === "object" ) {
+	                    for( key in val ) {
+	                        childVal = val[ key ];
+	                        text += child.replace( /\$(r?){([^\}]+)}/g, function( word, isRaw, childKey ){
+	                            var index = childKey.match( /\[(\d+)\]/ );
+	                            if ( index && index[ 1 ] ) {
+	                                childKey = index[ 1 ];
+	                            }
+	                            return isRaw ? childVal[ childKey ] : escapeHTML( childVal[ childKey ] );
+	                        }).replace( /\$(r?)(val|key)/g, function( word, isRaw, type ){
+								var text = ( type == "val" ) ? childVal : key;
+                                return isRaw ? text : escapeHTML( text );
+                            });
+	                    }
+	                }
+	                return text;
+	            }).replace( /\$(r?)\{([^\}]+)\}/g, function( word, isRaw, key ){
+					var text = seek( source, key.replace(/^this/, "" ).replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) );
+	                return isRaw ? text : escapeHTML( text );
+	            });
             
             if( isLoaded[ language ] ) {
                 text = wordReplace( text );
@@ -83,7 +92,7 @@
         wordReplace = function( text ){
             var words = word[ language ];
             return text.replace(/\$w\{([^\}]+)\}/g, function( text, key ){
-                return words[ key ];
+                return escapeHTML( words[ key ] );
             });
         };
     
@@ -111,7 +120,6 @@
         if( ajax ){
             url = ajax.url + suffix;
             callback = ajax.success;
-                    console.log(url);
             
             return this.each( function(){
                 var elem = $(this);
@@ -135,8 +143,8 @@
             });
         } else {
             return this.each( function(){
-                var elem = $(this);
-                var text = bind( template, source );
+                var elem = $(this),
+				    text = bind( template, source );
                 elem.html( text );
             } );
         }
@@ -210,6 +218,7 @@
     $.__render__ = {
             seek : seek,
             inception : inception,
+			escapeHTML : escapeHTML,
             word : word,
 			userAgent : navigator.userAgent
     };
