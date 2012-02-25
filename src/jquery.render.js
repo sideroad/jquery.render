@@ -37,8 +37,34 @@
                 return arguments.callee( obj[ key ], keys, val );
             }            
         },
+        currying = function(f){
+            var slice = Array.prototype.slice,
+                arg = slice.call(arguments);
+            arg.shift();
+            return function(){
+                var _arg = slice.call(arguments);
+                return f.apply(this, arg.concat(_arg));
+            };
+        },
 		escapeHTML = function( s ){
             return String( s ).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        },
+        objectReplace = function( obj, word, isRaw, key ){
+            var index = key.match( /\[(\d+)\]/ );
+            if ( index && index[ 1 ] ) {
+                key = index[ 1 ];
+            }
+            return isRaw ? obj[ key ] : escapeHTML( obj[ key ] );
+        },
+        keyValReplace = function( key, val, word, isRaw, type ){
+            var text = ( type == "val" ) ? val : key;
+            return isRaw ? text : escapeHTML( text );
+        },
+        wordReplace = function( text ){
+            var words = word[ language ];
+            return text.replace(/\$w\{([^\}]+)\}/g, function( text, key ){
+                return escapeHTML( words[ key ] );
+            });
         },
         bind = function( template, source ){
             var text =  template.replace( /\$\{([^\}]+)\}\.each\(\{([^\)]+)\}\)/g, function( word, key, child ){
@@ -52,29 +78,14 @@
 	                    length = val.length;
 	                    for( i = 0; i<length; i++ ) {
 	                        childVal = val[ i ];
-	                        text += child.replace( /\$(r?){([^\}]+)}/g, function( word, isRaw, childKey ){
-	                            var index = childKey.match( /\[(\d+)\]/ );
-	                            if ( index && index[ 1 ] ) {
-	                                childKey = index[ 1 ];
-	                            }
-	                            return isRaw ? childVal[ childKey ] : escapeHTML( childVal[ childKey ] );
-	                        }).replace( /\$(r?)val/g, function( word, isRaw ){
-								return isRaw ? childVal : escapeHTML( childVal );
-							});
-	                    }
+	                        text += child.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal ))
+	                                     .replace( /\$(r?)(val)/g, currying( keyValReplace, null, childVal ));
+                        }
 	                } else if( typeof val === "object" ) {
 	                    for( key in val ) {
 	                        childVal = val[ key ];
-	                        text += child.replace( /\$(r?){([^\}]+)}/g, function( word, isRaw, childKey ){
-	                            var index = childKey.match( /\[(\d+)\]/ );
-	                            if ( index && index[ 1 ] ) {
-	                                childKey = index[ 1 ];
-	                            }
-	                            return isRaw ? childVal[ childKey ] : escapeHTML( childVal[ childKey ] );
-	                        }).replace( /\$(r?)(val|key)/g, function( word, isRaw, type ){
-								var text = ( type == "val" ) ? childVal : key;
-                                return isRaw ? text : escapeHTML( text );
-                            });
+	                        text += child.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal))
+	                                     .replace( /\$(r?)(val|key)/g, currying( keyValReplace, key, childVal ));
 	                    }
 	                }
 	                return text;
@@ -88,26 +99,16 @@
             }
             return text;
             
-        },
-        wordReplace = function( text ){
-            var words = word[ language ];
-            return text.replace(/\$w\{([^\}]+)\}/g, function( text, key ){
-                return escapeHTML( words[ key ] );
-            });
         };
     
-    /*
+    /**
      * $.fn.render
      * Replace template string by the source object
-     *   @param {String} template string
-     *   @param {Object} source object
-     *   @returns {Object} jQuery element object
-     * 
-     * 
-     * Replace template string from ajax by the source object
-     *   @param {Object} Ajax settings
-     *   @param {Object} source object
-     *   @returns {Object} jQuery element object
+     * The template string is taken by Ajax when the first parameter is object.
+     * @namespace
+     * @param {String||Object} template string or Ajax settings
+     * @param {Object} source object
+     * @returns {Object} jQuery element object
      */
     $.fn.render = function( template, source ){
         var ajax = false,
@@ -151,17 +152,18 @@
     };
     
 
-    /*
+    /**
      * $.word
      * Load a word setting file
      * Language is automatically taken by navigator object, which you omit a set language.
-     *   @param {Object} word files URL
-     *       exp)
-     *       { en : "word.en", ja : "word.ja"}
-     *   @param {String} Default Language ( Omittable )
-     *   @param {String} Fixed Language ( Omittable )
-     *   @param {Function} Callback function ( Omittable )
-     *       Explicitly set language
+     * 
+     * @namespace
+     * @param {Object} word files URL
+     *     exp)
+     *     { en : "word.en", ja : "word.ja"}
+     * @param {String} Default Language ( Omittable )
+     * @param {String} Fixed Language ( Omittable )
+     * @param {Function} Callback function ( Omittable )
      */
     $.word = function( urls, def, fixed, callback ){
         lang = fixed || (navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);
@@ -193,11 +195,12 @@
         }
     };
 	
-	/*
+	/**
 	 * Set render file suffix which called ajax render request
-     *   @param {Object} userAgents setting
-     *       exp)
-     *       { ".an" : /Android/, ".ip" : /iPhone|iPad/ }
+	 * @namespace
+     * @param {Object} userAgents setting
+     *     exp)
+     *     { ".an" : /Android/, ".ip" : /iPhone|iPad/ }
 	 */
 	$.renderSuffix = function( userAgent ){
 		userAgent = userAgent || {};
@@ -209,11 +212,19 @@
 				suffix =  key;
 			}
 		}
-		
+	};
+	
+	/**
+	 * Clear suffix settings
+	 * @namespace
+	 * 
+	 */
+	$.clearSuffix = function(){
+	    suffix = "";
 	};
     
-    /*
-     * Unlocalize for QUnit
+    /**
+     * Export local value for Unit testing
      */
     $.__render__ = {
             seek : seek,

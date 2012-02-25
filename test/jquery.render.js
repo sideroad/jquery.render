@@ -3,69 +3,70 @@
 module( "jquery.render" );
 
 var map = {
-    name : "Amber",
-    age : 4,
-    type : "mix"
-};
-
-var list = [
-    1, 2, 3
-];
-
-var mappedMap = {
-    Amber : {
-        age : 4,
-        type : "mix"
-    }, 
-    Maruchan : {
-        age : 2,
-        type : "american-short-hair"
-    }
-};
-
-var mapedList = {
-    Cat : [ "Amber", "Maruchan" ],
-    Turtle : [ "Kamekichi", "Kameko" ]
-};
-
-var listedMap = [
-    {
         name : "Amber",
         age : 4,
         type : "mix"
     },
-    {
-        name : "Maruchan",
-        age : 2,
-        type : "american-short-hair"
-    }
-];
-
-var listedList = [
-    [ "Amber", "Maruchan" ],
-    [ "Kamekichi", "Kameko" ]
-];
-
-var notExists = {
-	name : null,
-	age : undefined
-};
-
-var escapeHTML = {
-    name : '<span>"&"</span>',
-    list : [ '<span>"&"</span>'],
-    map : {
-        name : '<span>"&"</span>'
-    }
-};
-
-var raw = {
-    name : '<span>"&"</span>',
-    list : [ '<span>"&"</span>'],
-    map : {
-        name : '<span>"&"</span>'
-    }
-};
+    list = [
+        1, 2, 3
+    ],
+    mappedMap = {
+        Amber : {
+            age : 4,
+            type : "mix"
+        }, 
+        Maruchan : {
+            age : 2,
+            type : "american-short-hair"
+        }
+    },
+    mappedMappedMap = {
+        Dog : {
+            Ruby : {
+                age : 5,
+                type : "Papion"
+            }
+        },
+        Cat : mappedMap
+    },
+    mapedList = {
+        Cat : [ "Amber", "Maruchan" ],
+        Turtle : [ "Kamekichi", "Kameko" ]
+    },
+    listedMap = [
+        {
+            name : "Amber",
+            age : 4,
+            type : "mix"
+        },
+        {
+            name : "Maruchan",
+            age : 2,
+            type : "american-short-hair"
+        }
+    ],
+    listedList = [
+        [ "Amber", "Maruchan" ],
+        [ "Kamekichi", "Kameko" ]
+    ],
+    notExists = {
+    	name : null,
+    	age : undefined
+    },
+    escapeHTML = {
+        name : '<span>"&"</span>',
+        list : [ '<span>"&"</span>'],
+        map : {
+            name : '<span>"&"</span>'
+        }
+    },
+    raw = {
+        name : '<span>"&"</span>',
+        list : [ '<span>"&"</span>'],
+        map : {
+            name : '<span>"&"</span>'
+        }
+    };
 
 test( "property", function() {
     expect( 9 );
@@ -255,9 +256,9 @@ asyncTest("suffix-userAgent-Chrome", function(){
             equals( $("#ren").html(), 
                 "<div>Chrome</div>");
             start();
+            $.clearSuffix();
         }
     });
-	$.renderSuffix();
 });
 
 asyncTest("suffix-userAgent-iPhone", function(){
@@ -270,10 +271,39 @@ asyncTest("suffix-userAgent-iPhone", function(){
             equals( $("#ren").html(), 
                 "<div>iPhone</div>");
             start();
+            $.clearSuffix();
         }
     });
-    $.renderSuffix();
 });
+
+// asyncTest("include", function(){
+    // expect( 1 );
+    // $("#ren").render({
+        // url : "parent.ren",
+        // success : function(){
+            // equals( $("#ren").html(),
+                // "<div>im parent</div>"+
+                // "<h1>Dog</h1>"+
+                // "<dl>"+
+                // "<dt>name</dt><dd>Ruby</dd>"+
+                // "<dt>age</dt><dd>5</dd>"+
+                // "<dt>type</dt><dd>papillon</dd>"+
+                // "</dl>"+
+                // "<h1>Cat</h1>"+
+                // "<dl>"+
+                // "<dt>name</dt><dd>Amber</dd>"+
+                // "<dt>age</dt><dd>4</dd>"+
+                // "<dt>type</dt><dd>mix</dd>"+
+                // "</dl>"+
+                // "<dl>"+
+                // "<dt>name</dt><dd>Maruchan</dd>"+
+                // "<dt>age</dt><dd>2</dd>"+
+                // "<dt>type</dt><dd>american-short-hair</dd>"+
+                // "</dl>");
+            // start();
+        // }
+    // }, mappedMappedMap);
+// });
 
 test("inception ( Local )", function(){
     var obj = { d : 1, e : [ true, false ]};
