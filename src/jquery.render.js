@@ -66,14 +66,21 @@
                 return escapeHTML( words[ key ] );
             });
         },
-        bind = function( template, source ){
-            var text =  template.replace( /\$\{([^\}]+)\}\.each\(\{([^\)]+)\}\)/g, function( word, key, child ){
-	                var val = ( key == "this" ) ? source : seek( source, key.replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) ),
-	                    i = 0,
+        bind = function( template, source, base ){
+            var reg = /\$\{([^\}]+)\}\.each\(\{([^}][^\)]+)\}\)/g,
+                match = template.match(reg),
+                val;
+            if( !base ) base = source;
+            if( match ) {
+                
+                return bind (template.replace( reg, function( word, key, child ){
+	                var i = 0,
 	                    length,
 	                    childVal,
 	                    text = "";
-	                
+	                val = ( key == "this" || key == "" ) ? source : 
+	                      seek( source, key.replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) );
+                    
 	                if( val instanceof Array ) {
 	                    length = val.length;
 	                    for( i = 0; i<length; i++ ) {
@@ -89,15 +96,15 @@
 	                    }
 	                }
 	                return text;
-	            }).replace( /\$(r?)\{([^\}]+)\}/g, function( word, isRaw, key ){
-					var text = seek( source, key.replace(/^this/, "" ).replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) );
-	                return isRaw ? text : escapeHTML( text );
-	            });
-            
-            if( isLoaded[ language ] ) {
-                text = wordReplace( text );
+	            }), val, base);
+	        } else {
+                var text = template.replace( /\$(r?)\{([^\}]+)\}/g, function( word, isRaw, key ){
+                    var text = seek( base, key.replace(/^this/, "" ).replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) );
+                    return isRaw ? text : escapeHTML( text );
+                });
+                
+                return ( isLoaded[ language ] ) ? wordReplace( text ) : text;
             }
-            return text;
             
         };
     
@@ -114,6 +121,7 @@
         var ajax = false,
             url,
             callback;
+        
         if ( typeof template == "object" && ! ( template instanceof String ) ) {
             ajax = template;
         }
@@ -123,23 +131,27 @@
             callback = ajax.success;
             
             return this.each( function(){
-                var elem = $(this);
+                var elem = $(this),
+                    getTemplate = function(){
+        
+                        $.ajax( $.extend( true, 
+                            ajax, {
+                                url : url,
+                                dataType : "text",
+                                success : function( template ){
+                                    var text = bind( template, source );
+                                    elem.html( text );
+                                    cache[ url ] = template;
+                                    if ( callback ) callback();
+                                }
+                            }
+                        ));
+                    };
                 if( cache[ url ] ) {
                     elem.html( bind( cache[ url ], source ) );
                     if ( callback ) callback();
                 } else {
-                    $.ajax( $.extend( true, 
-					    ajax, {
-							url : url,
-                            dataType : "text",
-                            success : function( template ){
-                                var text = bind( template, source );
-                                elem.html( text );
-                                cache[ url ] = template;
-                                if ( callback ) callback();
-                            }
-                        }
-					));
+                    getTemplate( elem, ajax, url, callback );
                 }
             });
         } else {

@@ -122,10 +122,11 @@ test( "each", function() {
     equals($( "#ren" ).render( "${this}.each({<h1>$key</h1><dl><dt>age</dt><dd>${age}</dd></dl>})", mappedMap ).html(),
                                   "<h1>Amber</h1><dl><dt>age</dt><dd>4</dd></dl>"+
                                   "<h1>Maruchan</h1><dl><dt>age</dt><dd>2</dd></dl>");
+
 // TODO
-//    equals($( "#ren" ).render( "${this}.each({<h1>$key</h1>${this}.each({<dl><dt>$key</dt><dd>$val</dd></dl>})})", mappedMap ).html(),
-//                                  "<h1>Amber</h1><dl><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>"+
-//                                  "<h1>Maruchan</h1><dl><dt>age</dt><dd>2</dd><dt>type</dt><dd>american-short-hair</dd></dl>");
+   // equals($( "#ren" ).render( "${this}.each({<h1>$key</h1>${this}.each({<dl><dt>$key</dt><dd>$val</dd></dl>})})", mappedMap ).html(),
+                                 // "<h1>Amber</h1><dl><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>"+
+                                 // "<h1>Maruchan</h1><dl><dt>age</dt><dd>2</dd><dt>type</dt><dd>american-short-hair</dd></dl>");
 
     equals($( "#ren" ).render( "<h1>Cat</h1><ul>${Cat}.each({<li>$val</li>})</ul>", mapedList ).html(),
                                   "<h1>Cat</h1><ul><li>Amber</li><li>Maruchan</li></ul>" );
