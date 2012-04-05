@@ -1,6 +1,6 @@
 <dl>
-${this}.each({
+<each src='${this}'>
 <dt>name</dt><dd>$key</dd>
-$val.inc({grandchild.ren});
-});
+<include src='${this}' href='grandchild.ren'>
+</each>
 </dl>
