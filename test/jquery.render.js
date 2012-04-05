@@ -109,53 +109,54 @@ test( "property", function() {
 });
 
 test( "each", function() {
-    expect( 10 );
+    expect( 14 );
 
-    equals($( "#ren" ).render( "<div>${this}.each({<p>$key is $val.</p>})</div>", map ).html(),
+    equals($( "#ren" ).render( "<div><each src='${this}'><p>$key is $val.</p></each></div>", map ).html(),
                                          "<div><p>name is Amber.</p><p>age is 4.</p><p>type is mix.</p></div>");
     
-    equals($( "#ren" ).render( "${this}.each({<p>$val</p>})", list ).html(),
+    equals($( "#ren" ).render( "<each src='${this}'><p>$val</p></each>", list ).html(),
                                   "<p>1</p><p>2</p><p>3</p>");
 
-    equals($( "#ren" ).render( "<h1>Amber</h1><dl>${Amber}.each({<dt>$key</dt><dd>$val</dd>})</dl>", mappedMap ).html(),
+    equals($( "#ren" ).render( "<h1>Amber</h1><dl><each src='${Amber}'><dt>$key</dt><dd>$val</dd></each></dl>", mappedMap ).html(),
                                   "<h1>Amber</h1><dl><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>");
-    equals($( "#ren" ).render( "${this}.each({<h1>$key</h1><dl><dt>age</dt><dd>${age}</dd></dl>})", mappedMap ).html(),
+    equals($( "#ren" ).render( "<each src='${this}'><h1>$key</h1><dl><dt>age</dt><dd>${age}</dd></dl></each>", mappedMap ).html(),
                                   "<h1>Amber</h1><dl><dt>age</dt><dd>4</dd></dl>"+
                                   "<h1>Maruchan</h1><dl><dt>age</dt><dd>2</dd></dl>");
 
-// TODO
-   // equals($( "#ren" ).render( "${this}.each({<h1>$key</h1>${this}.each({<dl><dt>$key</dt><dd>$val</dd></dl>})})", mappedMap ).html(),
-                                 // "<h1>Amber</h1><dl><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>"+
-                                 // "<h1>Maruchan</h1><dl><dt>age</dt><dd>2</dd><dt>type</dt><dd>american-short-hair</dd></dl>");
 
-    equals($( "#ren" ).render( "<h1>Cat</h1><ul>${Cat}.each({<li>$val</li>})</ul>", mapedList ).html(),
+    equals($( "#ren" ).render( "<each src='${this}'><h1>$key</h1><dl><each src='${this}'><dt>$key</dt><dd>$val</dd></each></dl></each>", mappedMap ).html(),
+                                 "<h1>Amber</h1><dl><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>"+
+                                 "<h1>Maruchan</h1><dl><dt>age</dt><dd>2</dd><dt>type</dt><dd>american-short-hair</dd></dl>");
+
+    equals($( "#ren" ).render( "<h1>Cat</h1><ul><each src='${Cat}'><li>$val</li></each></ul>", mapedList ).html(),
                                   "<h1>Cat</h1><ul><li>Amber</li><li>Maruchan</li></ul>" );
-    equals($( "#ren" ).render( "${this}.each({<h1>$key</h1><ul><li>${[0]}</li><li>${[1]}</li></ul>})", mapedList ).html(),
+    equals($( "#ren" ).render( "<each src='${this}'><h1>$key</h1><ul><li>${[0]}</li><li>${[1]}</li></ul></each>", mapedList ).html(),
                                          "<h1>Cat</h1><ul><li>Amber</li><li>Maruchan</li></ul>" +
                                          "<h1>Turtle</h1><ul><li>Kamekichi</li><li>Kameko</li></ul>");
-// TODO
-//    equals($( "#ren" ).render( "${this}.each({<h1>$key</h1><ul>${this}.each({<li>$val</li>})</ul>})", mapedList ).html(),
-//                                  "<h1>Cat</h1><ul><li>Amber</li><li>Maruchan</li></ul>" );
+
+    equals($( "#ren" ).render( "<each src='${this}'><h1>$key</h1><ul><each src='${this}'><li>$val</li></each></ul></each>", mapedList ).html(),
+                                 "<h1>Cat</h1><ul><li>Amber</li><li>Maruchan</li></ul><h1>Turtle</h1><ul><li>Kamekichi</li><li>Kameko</li></ul>" );
     
-    equals($( "#ren" ).render( "<dl>${[0]}.each({<dt>$key</dt><dd>$val</dd>})</dl>", listedMap ).html(),
+    equals($( "#ren" ).render( "<dl><each src='${[0]}'><dt>$key</dt><dd>$val</dd></each></dl>", listedMap ).html(),
                                   "<dl><dt>name</dt><dd>Amber</dd><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>" );
-    equals($( "#ren" ).render( "${this}.each({<dl><dt>name</dt><dd>${name}</dd></dl>})", listedMap ).html(),
+    equals($( "#ren" ).render( "<each src='${this}'><dl><dt>name</dt><dd>${name}</dd></dl></each>", listedMap ).html(),
                                   "<dl><dt>name</dt><dd>Amber</dd></dl>" +
                                   "<dl><dt>name</dt><dd>Maruchan</dd></dl>");
-// TODO
-//    equals($( "#ren" ).render( "${this}.each(<dl>${this}.each(<dt>$key</dt><dd>$val</dd>)</dl>)", listedMap ).html(),
-//                                  "<dl><dt>name</dt><dd>Amber</dd><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>" +
-//                                  "<dl><dt>name</dt><dd>Maruchan</dd><dt>age</dt><dd>2</dd><dt>type</dt><dd>american-short-hair</dd></dl>");
 
-    equals($( "#ren" ).render( "<p>${[0]}.each({<span>$val</span>})</p>", listedList ).html(),
+    equals($( "#ren" ).render( "<each src='${this}'><dl><each src='${this}'><dt>$key</dt><dd>$val</dd></each></dl></each>", listedMap ).html(),
+                                 "<dl><dt>name</dt><dd>Amber</dd><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>" +
+                                 "<dl><dt>name</dt><dd>Maruchan</dd><dt>age</dt><dd>2</dd><dt>type</dt><dd>american-short-hair</dd></dl>");
+
+    equals($( "#ren" ).render( "<p><each src='${[0]}'><span>$val</span></each></p>", listedList ).html(),
                                   "<p><span>Amber</span><span>Maruchan</span></p>");
-    equals($( "#ren" ).render( "${this}.each({<p><span>${[0]}</span><span>${[1]}</span></p>})", listedList ).html(),
+                                  
+    equals($( "#ren" ).render( "<each src='${this}'><p><span>${[0]}</span><span>${[1]}</span></p></each>", listedList ).html(),
                                   "<p><span>Amber</span><span>Maruchan</span></p>" +
                                   "<p><span>Kamekichi</span><span>Kameko</span></p>");
-// TODO
-//    equals($( "#ren" ).render( "${this}.each(<p>${this}.each(<span>$val</span>)</p>)", listedList ).html(),
-//                                  "<p><span>Amber</span><span>Maruchan</span></p>" +
-//                                  "<p><span>Kamekichi</span><span>Kameko</span></p>");
+
+    equals($( "#ren" ).render( "<each src='${this}'><p><each src='${this}'><span>$val</span></each></p></each>", listedList ).html(),
+                                  "<p><span>Amber</span><span>Maruchan</span></p>" +
+                                  "<p><span>Kamekichi</span><span>Kameko</span></p>");
 });
 
 test( "escapeHTML", function() {
@@ -163,8 +164,8 @@ test( "escapeHTML", function() {
     equals($( "#ren" ).render( "<p>${name}</p>"+
                                                  "<p>${list[0]}</p>"+
                                                  "<p>${map.name}</p>"+
-                                                 "${list}.each({<p>$val</p>})"+
-                                                 "${map}.each({<p>$val</p>})", escapeHTML ).html(),
+                                                 "<each src='${list}'><p>$val</p></each>"+
+                                                 "<each src='${map}' ><p>$val</p></each>", escapeHTML ).html(),
                                                 "<p>&lt;span&gt;\"&amp;\"&lt;/span&gt;</p>"+
                                                 "<p>&lt;span&gt;\"&amp;\"&lt;/span&gt;</p>"+
                                                 "<p>&lt;span&gt;\"&amp;\"&lt;/span&gt;</p>"+
@@ -176,8 +177,8 @@ test( "raw", function() {
     equals($( "#ren" ).render( "<p>$r{name}</p>"+
                                                  "<p>$r{list[0]}</p>"+
                                                  "<p>$r{map.name}</p>"+
-                                                 "${list}.each({<p>$rval</p>})"+
-                                                 "${map}.each({<p>$rval</p>})", raw )[0].innerHTML,
+                                                 "<each src='${list}'><p>$rval</p></each>"+
+                                                 "<each src='${map}' ><p>$rval</p></each>", raw )[0].innerHTML,
                                                 "<p><span>\"&amp;\"</span></p>"+
                                                 "<p><span>\"&amp;\"</span></p>"+
                                                 "<p><span>\"&amp;\"</span></p>"+
