@@ -1,1 +1,1 @@
-<ul>${fruits}.each({<li>${name} : ${amount}</li>})</ul>
+<ul><each src='${fruits}'><li>${name} : ${amount}</li></each></ul>

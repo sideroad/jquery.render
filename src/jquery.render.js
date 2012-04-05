@@ -66,45 +66,59 @@
                 return escapeHTML( words[ key ] );
             });
         },
-        bind = function( template, source, base ){
-            var reg = /\$\{([^\}]+)\}\.each\(\{([^}][^\)]+)\}\)/g,
-                match = template.match(reg),
-                val;
-            if( !base ) base = source;
-            if( match ) {
-                
-                return bind (template.replace( reg, function( word, key, child ){
-	                var i = 0,
-	                    length,
-	                    childVal,
-	                    text = "";
-	                val = ( key == "this" || key == "" ) ? source : 
-	                      seek( source, key.replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) );
+        each = function( template, source ) {
+            template = $("<div>"+template+"</div>");
+            
+            template.find("each").each(function(){
+                    var elem = $(this),
+                    key = elem.attr("src").match(/^\$\{(.+)\}$/)[1],
+                    val = ( key == "this" || key == "" ) ? source : 
+                          seek( source, key.replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) ),
+                    i = 0,
+                    length,
+                    childVal,
+                    child = elem.html(),
+                    childText,
+                    text = "";
                     
-	                if( val instanceof Array ) {
-	                    length = val.length;
-	                    for( i = 0; i<length; i++ ) {
-	                        childVal = val[ i ];
-	                        text += child.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal ))
-	                                     .replace( /\$(r?)(val)/g, currying( keyValReplace, null, childVal ));
+                if( val instanceof Array ) {
+                    length = val.length;
+                    for( i = 0; i<length; i++ ) {
+                        childVal = val[ i ];
+                        childText = child;
+                        if( $("<div>"+child+"</div>").find("each").length ){
+                            childText = each( childText, childVal );
                         }
-	                } else if( typeof val === "object" ) {
-	                    for( key in val ) {
-	                        childVal = val[ key ];
-	                        text += child.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal))
-	                                     .replace( /\$(r?)(val|key)/g, currying( keyValReplace, key, childVal ));
-	                    }
-	                }
-	                return text;
-	            }), val, base);
-	        } else {
-                var text = template.replace( /\$(r?)\{([^\}]+)\}/g, function( word, isRaw, key ){
-                    var text = seek( base, key.replace(/^this/, "" ).replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) );
-                    return isRaw ? text : escapeHTML( text );
-                });
+                        text += childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal ))
+                                         .replace( /\$(r?)(val)/g, currying( keyValReplace, null, childVal ));
+                    }
+                } else if( typeof val === "object" ) {
+                    for( key in val ) {
+                        childVal = val[ key ];
+                        childText = child;
+                        if( $("<div>"+child+"</div>").find("each").length ){
+                            childText = each( childText, childVal );
+                        }
+                        text += childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal))
+                                         .replace( /\$(r?)(val|key)/g, currying( keyValReplace, key, childVal ));
+                    }
+                }
+                elem.replaceWith( text );
                 
-                return ( isLoaded[ language ] ) ? wordReplace( text ) : text;
-            }
+            });
+            
+            return template.html();
+            
+        },
+        bind = function( template, source ){
+            
+            template = each( template, source );
+            var text = template.replace( /\$(r?)\{([^\}]+)\}/g, function( word, isRaw, key ){
+                var text = seek( source, key.replace(/^this/, "" ).replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) );
+                return isRaw ? text : escapeHTML( text );
+            });
+                
+            return ( isLoaded[ language ] ) ? wordReplace( text ) : text;
             
         };
     
