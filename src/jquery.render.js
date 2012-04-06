@@ -71,7 +71,7 @@
             
             template.find("each").each(function(){
                     var elem = $(this),
-                    key = elem.attr("src").match(/^\$\{(.+)\}$/)[1],
+                    key = elem.attr("src").match(/^\$(?:\{|%7B)(.+)(?:\}|%7D)$/)[1],
                     val = ( key == "this" || key == "" ) ? source : 
                           seek( source, key.replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) ),
                     i = 0,
