@@ -29,7 +29,7 @@ var map = {
         },
         Cat : mappedMap
     },
-    mapedList = {
+    mappedList = {
         Cat : [ "Amber", "Maruchan" ],
         Turtle : [ "Kamekichi", "Kameko" ]
     },
@@ -89,7 +89,7 @@ test( "property", function() {
                                          "<p>Maruchan is american-short-hair.</p>");
     
     equals($( "#ren" ).render( "<p>The most smallest cat is ${Cat[0]}.</p>"+
-                                  "<p>The most biggest turtle is ${Turtle[1]}.</p>", mapedList ).html(),
+                                  "<p>The most biggest turtle is ${Turtle[1]}.</p>", mappedList ).html(),
                                   "<p>The most smallest cat is Amber.</p>"+
                                   "<p>The most biggest turtle is Kameko.</p>" );
     
@@ -108,8 +108,26 @@ test( "property", function() {
                                          "<p>null is undefined years old.</p>");
 });
 
+test( "bind", function(){
+    
+    equals($( "#ren" ).render( "<div data-render='${Amber}.bind'>age is ${age}. type is ${type}.</div>", mappedMap ).html(),
+            "<div>age is 4. type is mix.</div>" );
+            
+    equals($( "#ren" ).render( "<div data-render='${Dog.Ruby}.bind'>age is ${age}. type is ${type}.</div>", mappedMappedMap ).html(),
+            "<div>age is 5. type is Papion.</div>" );
+    
+    equals($( "#ren" ).render( "<div data-render='${Cat}.bind'>${[0]} and ${[1]}</div>", mappedList ).html(),
+            "<div>Amber and Maruchan</div>");
+    
+    equals($( "#ren" ).render( "<div data-render='${[0]}.bind'>${name} is ${age} years old.</div>", listedMap ).html(),
+            "<div>Amber is 4 years old.</div>");
+            
+    equals($( "#ren" ).render( "<div data-render='${[1]}.bind'>${[0]} and ${[1]}</div>", listedList ).html(),
+            "<div>Kamekichi and Kameko</div>");
+    
+});
+
 test( "each", function() {
-    expect( 14 );
 
     equals($( "#ren" ).render( "<div><p data-render='${this}.each'>$key is $val.</p></div>", map ).html(),
                                          "<div><p>name is Amber.</p><p>age is 4.</p><p>type is mix.</p></div>");
@@ -117,35 +135,13 @@ test( "each", function() {
     equals($( "#ren" ).render( "<p data-render='${this}.each'>$val</p>", list ).html(),
                                   "<p>1</p><p>2</p><p>3</p>");
 
-    equals($( "#ren" ).render( "<h1>Amber</h1><dl data-render='${Amber}.in'><dt>$key</dt><dd>$val</dd></dl>", mappedMap ).html(),
-                                  "<h1>Amber</h1><dl><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>");
-    equals($( "#ren" ).render( "<div data-render='${this}.in'><h1>$key</h1><dl><dt>age</dt><dd>${age}</dd></dl></div>", mappedMap ).html(),
-                                  "<div><h1>Amber</h1><dl><dt>age</dt><dd>4</dd></dl>"+
-                                  "<h1>Maruchan</h1><dl><dt>age</dt><dd>2</dd></dl></div>");
-
-
-    equals($( "#ren" ).render( "<div data-render='${this}.each'><h1>$key</h1><dl data-render='${this}.in'><dt>$key</dt><dd>$val</dd></dl>", mappedMap ).html(),
-                                 "<div><h1>Amber</h1><dl><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl></div>"+
-                                 "<div><h1>Maruchan</h1><dl><dt>age</dt><dd>2</dd><dt>type</dt><dd>american-short-hair</dd></dl></div>");
-
-    equals($( "#ren" ).render( "<h1>Cat</h1><ul data-render='${Cat}.in'><li>$val</li></ul>", mapedList ).html(),
-                                  "<h1>Cat</h1><ul><li>Amber</li><li>Maruchan</li></ul>" );
-    equals($( "#ren" ).render( "<div data-render='${this}.each'><h1>$key</h1><ul><li>${[0]}</li><li>${[1]}</li></ul></div>", mapedList ).html(),
+    equals($( "#ren" ).render( "<div data-render='${this}.each'><h1>$key</h1><ul><li>${[0]}</li><li>${[1]}</li></ul></div>", mappedList ).html(),
                                          "<div><h1>Cat</h1><ul><li>Amber</li><li>Maruchan</li></ul></div>" +
                                          "<div><h1>Turtle</h1><ul><li>Kamekichi</li><li>Kameko</li></ul></div>");
 
-    equals($( "#ren" ).render( "<div data-render='${this}.in'><h1>$key</h1><ul><li data-render='${this}.each'>$val</li></ul></div>", mapedList ).html(),
-                                 "<div><h1>Cat</h1><ul><li>Amber</li><li>Maruchan</li></ul><h1>Turtle</h1><ul><li>Kamekichi</li><li>Kameko</li></ul></div>" );
-    
-    equals($( "#ren" ).render( "<dl data-render='${[0]}.in'><dt>$key</dt><dd>$val</dd></dl>", listedMap ).html(),
-                                  "<dl><dt>name</dt><dd>Amber</dd><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>" );
     equals($( "#ren" ).render( "<dl data-render='${this}.each'><dt>name</dt><dd>${name}</dd></dl>", listedMap ).html(),
                                   "<dl><dt>name</dt><dd>Amber</dd></dl>" +
                                   "<dl><dt>name</dt><dd>Maruchan</dd></dl>");
-
-    equals($( "#ren" ).render( "<div data-render='${this}.each'><dl data-render='${this}.in'><dt>$key</dt><dd>$val</dd></dl></div>", listedMap ).html(),
-                                 "<div><dl><dt>name</dt><dd>Amber</dd><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl></div>" +
-                                 "<div><dl><dt>name</dt><dd>Maruchan</dd><dt>age</dt><dd>2</dd><dt>type</dt><dd>american-short-hair</dd></dl></div>");
 
     equals($( "#ren" ).render( "<p><span data-render='${[0]}.each'>$val</span></p>", listedList ).html(),
                                   "<p><span>Amber</span><span>Maruchan</span></p>");
@@ -157,6 +153,57 @@ test( "each", function() {
     equals($( "#ren" ).render( "<p data-render='${this}.each'><span data-render='${this}.each'>$val</span></p>", listedList ).html(),
                                   "<p><span>Amber</span><span>Maruchan</span></p>" +
                                   "<p><span>Kamekichi</span><span>Kameko</span></p>");
+});
+
+test( "in", function(){
+
+    equals($( "#ren" ).render( "<h1>Amber</h1><dl data-render='${Amber}.in'><dt>$key</dt><dd>$val</dd></dl>", mappedMap ).html(),
+                                  "<h1>Amber</h1><dl><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>");
+
+    equals($( "#ren" ).render( "<div data-render='${this}.in'><h1>$key</h1><dl><dt>age</dt><dd>${age}</dd></dl></div>", mappedMap ).html(),
+                                  "<div><h1>Amber</h1><dl><dt>age</dt><dd>4</dd></dl>"+
+                                  "<h1>Maruchan</h1><dl><dt>age</dt><dd>2</dd></dl></div>");
+    
+    equals($( "#ren" ).render( "<h1>Cat</h1><ul data-render='${Cat}.in'><li>$val</li></ul>", mappedList ).html(),
+                                  "<h1>Cat</h1><ul><li>Amber</li><li>Maruchan</li></ul>" );
+    
+    equals($( "#ren" ).render( "<dl data-render='${[0]}.in'><dt>$key</dt><dd>$val</dd></dl>", listedMap ).html(),
+                                  "<dl><dt>name</dt><dd>Amber</dd><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>" );
+
+    //TODO nested in ( in-in )
+
+});
+
+test( "each/in/bind", function(){
+    
+    //each-in
+    equals($( "#ren" ).render( "<div data-render='${this}.each'><h1>$key</h1><dl data-render='${this}.in'><dt>$key</dt><dd>$val</dd></dl>", mappedMap ).html(),
+                                 "<div><h1>Amber</h1><dl><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl></div>"+
+                                 "<div><h1>Maruchan</h1><dl><dt>age</dt><dd>2</dd><dt>type</dt><dd>american-short-hair</dd></dl></div>");
+
+    equals($( "#ren" ).render( "<div data-render='${this}.each'><dl data-render='${this}.in'><dt>$key</dt><dd>$val</dd></dl></div>", listedMap ).html(),
+                                 "<div><dl><dt>name</dt><dd>Amber</dd><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl></div>" +
+                                 "<div><dl><dt>name</dt><dd>Maruchan</dd><dt>age</dt><dd>2</dd><dt>type</dt><dd>american-short-hair</dd></dl></div>");
+    
+    //in-each         
+    equals($( "#ren" ).render( "<div data-render='${this}.in'><h1>$key</h1><ul><li data-render='${this}.each'>$val</li></ul></div>", mappedList ).html(),
+                                 "<div><h1>Cat</h1><ul><li>Amber</li><li>Maruchan</li></ul><h1>Turtle</h1><ul><li>Kamekichi</li><li>Kameko</li></ul></div>" );
+    
+    //bind-each
+    equals($( "#ren" ).render( "<div data-render='${Amber}.bind'><span data-render='${this}.each'>$key is $val.</span></div>", mappedMap ).html(),
+                               "<div><span>age is 4.</span><span>type is mix.</span></div>" );
+
+    //each-bind
+    equals($( "#ren" ).render( "<div data-render='${this}.each'><span data-render='${this}.bind'>age is ${age}.</span></div>", mappedMap ).html(),
+                               "<div><span>age is 4.</span></div><div><span>age is 2.</span></div>" );
+
+    
+    //TODO bind-in
+    
+    //TODO in-bind
+    
+    
+    
 });
 
 test( "escapeHTML", function() {

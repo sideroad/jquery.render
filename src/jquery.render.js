@@ -85,33 +85,42 @@
                 
                 elem.removeAttr("data-render");
                 child = (method == "in") ? elem.html() :
-                        (method == "each") ? elem[0].outerHTML : "";
+                        (method == "each") ? elem[0].outerHTML : 
+                        (method == "bind") ? elem[0].outerHTML : "";
                 
-                console.log(child);   
-                if( val instanceof Array ) {
-                    length = val.length;
-                    for( i = 0; i<length; i++ ) {
-                        childVal = val[ i ];
-                        childText = child;
-                        if( $("<div>"+child+"</div>").find("[data-render]").length ){
-                            childText = each( childText, childVal );
-                        }
-                        text += childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal ))
-                                         .replace( /\$(r?)(val)/g, currying( keyValReplace, null, childVal ));
+                if(method == "bind"){
+                    childText = child;
+                    if( $("<div>"+child+"</div>").find("[data-render]").length ){
+                        childText = each( child, val );
                     }
-                } else if( typeof val === "object" ) {
-                    for( key in val ) {
-                        childVal = val[ key ];
-                        childText = child;
-                        if( $("<div>"+child+"</div>").find("[data-render]").length ){
-                            childText = each( childText, childVal );
+                    text = childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, val));
+                } else {
+                    if( val instanceof Array ) {
+                        length = val.length;
+                        for( i = 0; i<length; i++ ) {
+                            childVal = val[ i ];
+                            childText = child;
+                            if( $("<div>"+child+"</div>").find("[data-render]").length ){
+                                childText = each( childText, childVal );
+                            }
+                            text += childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal ))
+                                             .replace( /\$(r?)(val)/g, currying( keyValReplace, null, childVal ));
                         }
-                        text += childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal))
-                                         .replace( /\$(r?)(val|key)/g, currying( keyValReplace, key, childVal ));
+                    } else if( typeof val === "object" ) {
+                        for( key in val ) {
+                            childVal = val[ key ];
+                            childText = child;
+                            if( $("<div>"+child+"</div>").find("[data-render]").length ){
+                                childText = each( childText, childVal );
+                            }
+                            text += childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal))
+                                             .replace( /\$(r?)(val|key)/g, currying( keyValReplace, key, childVal ));
+                        }
                     }
                 }
                 method == "in" ? elem.html(text) : 
-                method == "each" ? elem.replaceWith( text ) : "";
+                method == "each" ? elem.replaceWith( text ) : 
+                method == "bind" ? elem.replaceWith( text ) : "";
                 
             });
             
