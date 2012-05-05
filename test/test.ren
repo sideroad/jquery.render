@@ -1,1 +1,1 @@
-<div><each src='${this}'><p>$key is $val.</p></each></div>
+<div><p data-render='${this}.each'>$key is $val.</p></div>
