@@ -69,24 +69,31 @@
         each = function( template, source ) {
             template = $("<div>"+template+"</div>");
             
-            template.find("each").each(function(){
+            template.find("[data-render]").each(function(){
                     var elem = $(this),
-                    key = elem.attr("src").match(/^\$(?:\{|%7B)(.+)(?:\}|%7D)$/)[1],
+                    data = elem.data("render").match(/^\$(?:\{|%7B)(.+)(?:\}|%7D)\.(\w+)$/),
+                    method = data[2],
+                    key = data[1],
                     val = ( key == "this" || key == "" ) ? source : 
                           seek( source, key.replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) ),
                     i = 0,
                     length,
                     childVal,
-                    child = elem.html(),
+                    child,
                     childText,
                     text = "";
-                    
+                
+                elem.removeAttr("data-render");
+                child = (method == "in") ? elem.html() :
+                        (method == "each") ? elem[0].outerHTML : "";
+                
+                console.log(child);   
                 if( val instanceof Array ) {
                     length = val.length;
                     for( i = 0; i<length; i++ ) {
                         childVal = val[ i ];
                         childText = child;
-                        if( $("<div>"+child+"</div>").find("each").length ){
+                        if( $("<div>"+child+"</div>").find("[data-render]").length ){
                             childText = each( childText, childVal );
                         }
                         text += childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal ))
@@ -96,14 +103,15 @@
                     for( key in val ) {
                         childVal = val[ key ];
                         childText = child;
-                        if( $("<div>"+child+"</div>").find("each").length ){
+                        if( $("<div>"+child+"</div>").find("[data-render]").length ){
                             childText = each( childText, childVal );
                         }
                         text += childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal))
                                          .replace( /\$(r?)(val|key)/g, currying( keyValReplace, key, childVal ));
                     }
                 }
-                elem.replaceWith( text );
+                method == "in" ? elem.html(text) : 
+                method == "each" ? elem.replaceWith( text ) : "";
                 
             });
             
