@@ -24,7 +24,7 @@
         seek = function( obj, keys ){
             if( !keys.length ) return obj;
             var key = keys.shift();
-            return arguments.callee( obj[ key ], keys );
+            return seek( obj[ key ], keys );
         },
         inception = function( obj, keys, val ){
             var key = keys.shift();
@@ -34,7 +34,7 @@
                 return obj;
             } else {
                 if( !obj[ key ]) obj[key] = {};
-                return arguments.callee( obj[ key ], keys, val );
+                return inception( obj[ key ], keys, val );
             }            
         },
         currying = function(f){
@@ -93,7 +93,8 @@
                     if( $("<div>"+child+"</div>").find("[data-render]").length ){
                         childText = each( child, val );
                     }
-                    text = childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, val));
+                    text = childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, val))
+                                    .replace( /\$(r?)(val|key)/g, currying( keyValReplace, key, val ));
                 } else {
                     if( val instanceof Array ) {
                         length = val.length;
@@ -150,7 +151,7 @@
      */
     $.fn.render = function( template, source ){
         var ajax = false,
-            url,
+            baseUrl,
             callback;
         
         if ( typeof template == "object" && ! ( template instanceof String ) ) {
@@ -158,31 +159,52 @@
         }
 
         if( ajax ){
-            url = ajax.url + suffix;
+            baseUrl = ajax.url + suffix;
             callback = ajax.success;
             
             return this.each( function(){
                 var elem = $(this),
-                    getTemplate = function(){
+                    cnt = 1,
+                    replace = function(template){
+                        template = $("<div>"+template+"</div>");
+                        template.find("[data-include]").each(function(){
+                            var child = $(this);
+                            child.html(cache[child.data("include")]);
+                            child.removeAttr("data-include");
+                        });
+                        
+                        return template.find("[data-include]").length ? replace( template.html() ) : template.html();
+                        
+                    },
+                    getTemplate = function(url){
         
                         $.ajax( $.extend( true, 
                             ajax, {
                                 url : url,
                                 dataType : "text",
                                 success : function( template ){
-                                    var text = bind( template, source );
-                                    elem.html( text );
+                                    var child = $("<div>"+template+"</div>").find("[data-include]");
+                                    cnt = cnt + child.length -1;
+                                    
                                     cache[ url ] = template;
-                                    if ( callback ) callback();
+                                    if(cnt){
+                                        child.each(function(){                                       
+                                            getTemplate($(this).data("include")); 
+                                        });
+                                    } else {
+                                        elem.html( bind( replace( cache[ baseUrl ] ), source ) );
+                                        if ( callback ) callback();    
+                                    }
+                                    
                                 }
                             }
                         ));
                     };
-                if( cache[ url ] ) {
-                    elem.html( bind( cache[ url ], source ) );
+                if( cache[ baseUrl ] ) {
+                    elem.html( bind( replace( cache[ baseUrl ] ), source ) );
                     if ( callback ) callback();
                 } else {
-                    getTemplate( elem, ajax, url, callback );
+                    getTemplate(baseUrl);
                 }
             });
         } else {
@@ -209,7 +231,7 @@
      * @param {Function} Callback function ( Omittable )
      */
     $.word = function( urls, def, fixed, callback ){
-        lang = fixed || (navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);
+        var lang = fixed || (navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);
         language = lang = ( urls[ lang ] ) ? lang : 
                                    ( urls[def] ) ? def : "en";
         
