@@ -1,0 +1,5 @@
+<div>
+    <header data-include="include/header.ren" ></header>
+    <div class="body" data-render="${this}.bind" data-include="include/body.ren" ></div>
+    <footer data-include="include/footer.ren" ></footer>
+</div>
