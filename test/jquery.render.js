@@ -124,6 +124,12 @@ test( "bind", function(){
             
     equals($( "#ren" ).render( "<div data-render='${[1]}.bind'>${[0]} and ${[1]}</div>", listedList ).html(),
             "<div>Kamekichi and Kameko</div>");
+
+    equals($( "#ren" ).render( "<div data-render='${Amber}.bind'><p data-render='${age}.bind'>age is $val.</p></div>", mappedMap ).html(),
+            "<div><p>age is 4.</p></div>" );
+            
+    equals($( "#ren" ).render( "<p data-render='${[0]}.bind'><span data-render='${[0]}.bind'>$val</span></p>", listedList ).html(),
+                                  "<p><span>Amber</span></p>", "nested");
     
 });
 
@@ -152,7 +158,7 @@ test( "each", function() {
 
     equals($( "#ren" ).render( "<p data-render='${this}.each'><span data-render='${this}.each'>$val</span></p>", listedList ).html(),
                                   "<p><span>Amber</span><span>Maruchan</span></p>" +
-                                  "<p><span>Kamekichi</span><span>Kameko</span></p>");
+                                  "<p><span>Kamekichi</span><span>Kameko</span></p>", "nested");
 });
 
 test( "in", function(){
@@ -170,11 +176,13 @@ test( "in", function(){
     equals($( "#ren" ).render( "<dl data-render='${[0]}.in'><dt>$key</dt><dd>$val</dd></dl>", listedMap ).html(),
                                   "<dl><dt>name</dt><dd>Amber</dd><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl>" );
 
-    //TODO nested in ( in-in )
+    equals($( "#ren" ).render( "<ul data-render='${Cat}.in'><li><dl data-render='${this}.in'><dt>$key</dt><dd>$val</dd></dl></li></ul>", mappedMappedMap ).html(),
+                                  "<ul><li><dl><dt>age</dt><dd>4</dd><dt>type</dt><dd>mix</dd></dl></li><li><dl><dt>age</dt><dd>2</dd><dt>type</dt><dd>american-short-hair</dd></dl></li></ul>", "nested" );
 
 });
 
-test( "each/in/bind", function(){
+
+test( "nested several manipulation", function(){
     
     //each-in
     equals($( "#ren" ).render( "<div data-render='${this}.each'><h1>$key</h1><dl data-render='${this}.in'><dt>$key</dt><dd>$val</dd></dl>", mappedMap ).html(),
@@ -246,9 +254,26 @@ asyncTest( "ajax", function(){
     
 } );
 
+
+asyncTest( "include", function(){
+    expect( 1 );
+    $("#ren").render({
+        url : "include/index.ren",
+        success : function(){
+            equals( $("#ren").html(),
+                "<div>\n"+
+                "    <header><p>this is Header!!</p></header>\n"+
+                "    <div class=\"body\"><div class=\"item\">this is Amber!!</div></div>\n"+
+                "    <footer><p>this is Footer!!</p></footer>\n"+
+                "</div>");
+            start();
+        }
+    },map);
+});
+
 asyncTest("word-setting-en", function(){
     expect( 1 );
-
+    
     $.word( {
         en : "word.en",
         ja : "word.ja"
@@ -273,6 +298,7 @@ asyncTest("word-setting-en", function(){
 
 asyncTest("word-setting-ja", function(){
     expect( 1 );
+    
     $.word( {
         en : "word.en",
         ja : "word.ja"
@@ -297,6 +323,7 @@ asyncTest("word-setting-ja", function(){
 
 asyncTest("suffix-userAgent-Chrome", function(){
     expect( 1 );
+    
 	$.__render__.userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.106 Safari/535.2";
     $.renderSuffix( { ".gc" : /Chrome/, ".ff" : /Firefox/, ".ie" : /MSIE/, ".ip" : /iPhone/, ".ipd" : /iPad/ } );
     $("#ren").render({
@@ -312,6 +339,7 @@ asyncTest("suffix-userAgent-Chrome", function(){
 
 asyncTest("suffix-userAgent-iPhone", function(){
     expect( 1 );
+    
     $.__render__.userAgent = "Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_2_1 like Mac OS X; ja-jp) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8C148 Safari/6531.22.7";
     $.renderSuffix( { ".gc" : /Chrome/, ".ff" : /Firefox/, ".ie" : /MSIE/, ".ip" : /iPhone/, ".ipd" : /iPad/ } );
     $("#ren").render({
