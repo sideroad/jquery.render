@@ -1,0 +1,37 @@
+{
+  "name": "jquery.render",
+  "title": "jQuery Render",
+  "description": "A jQuery template engine plugin.",
+  "version": "1.2.4",
+  "homepage": "https://github.com/sideroad/jquery.render",
+  "author": {
+    "name": "sideroad",
+    "url": "http://sideroad.secret.jp/"
+  },
+  "maintainers": [
+    {
+      "name": "sideroad",
+      "email": "sideroad.jp@gmail.com",
+      "url": "http://sideroad.secret.jp/"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sideroad/jquery.render.git"
+  },
+  "bugs": "https://github.com/sideroad/jquery.render/issues",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://www.opensource.org/licenses/MIT"
+    },
+    {
+      "type": "GPL",
+      "url": "http://www.opensource.org/licenses/GPL-2.0"
+    }
+  ],
+  "dependencies": {},
+  "devDependencies": {
+  },
+  "keywords": [ "template", "render" ]
+}
