@@ -30,7 +30,9 @@
       "url": "http://www.opensource.org/licenses/GPL-2.0"
     }
   ],
-  "dependencies": {},
+  "dependencies": {
+      "jquery": ">=1.5"
+  },
   "devDependencies": {
   },
   "keywords": [ "template", "render" ]
