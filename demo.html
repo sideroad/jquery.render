@@ -13,32 +13,32 @@
 <div style="width:80%;margin:auto;">
 <div style="width:40%;float:left;margin:5%;">
 <p style="font-size:3em;margin:10px;">Data</p>
-<textarea id="json" style="width:100%;height:300px;border-radius:10px;">
+<textarea id="json" style="width:100%;height:300px;border-radius:10px;font-size:1em;">
 {
-    "message":"Hello World!", 
-    "title":"jQuery plugin", 
-    "plugins":["jquery.ui","jquery.sidebar","jquery.textanimation","jquery.floatingmessage"],
-    "creature" : {
-        "human" : {
-            "walk" : "slow",
-            "speakable" : "yes"
-        },
-        "dog" : {
-            "walk" : "fast",
-            "speakable" : "no"
-        }
+  "message":"Hello World!", 
+  "title":"jQuery plugin", 
+  "plugins":["jquery.sidebar","jquery.textanimation","jquery.floatingmessage"],
+  "creature" : {
+    "human" : {
+      "walk" : "slow",
+      "speakable" : "yes"
     },
-    "fruits" : [
-        {"name" : "Apple", "amount" : 10},
-        {"name" : "Grape", "amount" : 20},
-        {"name" : "Lemon", "amount" : 30}
-    ]
+    "dog" : {
+      "walk" : "fast",
+      "speakable" : "no"
+    }
+  },
+  "fruits" : [
+    {"name" : "Apple", "amount" : 10},
+    {"name" : "Grape", "amount" : 20},
+    {"name" : "Lemon", "amount" : 30}
+  ]
 }
 </textarea>
 </div>
 <div style="width:40%;float:left;margin:5%;">
 <p style="font-size:3em;margin:10px;">Template</p>
-<textarea id="template" style="width:100%;height:300px;border-radius:10px;" >
+<textarea id="template" style="width:100%;height:300px;border-radius:10px;font-size:1em;" >
 <!-- Template -->
 <div><span>${message}</span></div>
 <ul data-render="${plugins}.each"><li>$val</li></ul>
