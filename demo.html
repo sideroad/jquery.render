@@ -1,6 +1,5 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-"http://www.w3.org/TR/html4/loose.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <title>jquery.render.js</title>
@@ -9,61 +8,59 @@
 
     </head>
     <body>
-        <b style="font-size:80px;position:absolute;top:42%;left:28%;" >jquery.render</b>
-        <textarea id="json" style="width:500px;height:300px;">
-            {
-                    message:"Hello World!", 
-                    title:"jQuery plugin", 
-                    plugins:["jquery.ui","jquery.sidebar","jquery.textanimation","jquery.floatingmessage"],
-                    creature : {
-                        human : {
-                            walk : "slow",
-                            speakable : "yes"
-                        },
-                        dog : {
-                            walk : "fast",
-                            speakable : "no"
-                        }
-                    },
-                    fruits : [
-                        {name : "Apple", amount : 10},
-                        {name : "Grape", amount : 20},
-                        {name : "Lemon", amount : 30}
-                    ]
-                    
-                }
-        </textarea>
-        <textarea id="template" style="width:500px;height:300px;" >
-            <div><h3>Human</h3><dl><each src='${creature.human}'><dt>$key</dt><dd>$val</dd></each></dl></div>
-        </textarea>
-
-        <script type="text/javascript">
-            $(document.body).ready(function(){
-                var obj = JSON.parse($("#json").val());
-                
-                
-                $("#re1").render("<h1>${message}</h1>",obj);
-                $("#re2").render("<h2>${title}</h2>",obj);
-                $("#re3").render("<ul><each src='${plugins}'><li>$val</li></each></ul>",obj);
-                $("#re4").render({
-                    url : "ren/demo.ren",
-                    success : function(){
-                      window.console && console.log("finish!")
-                    }
-                },obj);
+        <div style="font-size:80px;width:100%;text-align:center;" >jquery.render</div>
+        <div style="width:100%;text-align:center;">
+<div style="width:80%;margin:auto;">
+<div style="width:40%;float:left;margin:5%;">
+<p style="font-size:3em;margin:10px;">Data</p>
+<textarea id="json" style="width:100%;height:300px;border-radius:10px;">
+{
+    "message":"Hello World!", 
+    "title":"jQuery plugin", 
+    "plugins":["jquery.ui","jquery.sidebar","jquery.textanimation","jquery.floatingmessage"],
+    "creature" : {
+        "human" : {
+            "walk" : "slow",
+            "speakable" : "yes"
+        },
+        "dog" : {
+            "walk" : "fast",
+            "speakable" : "no"
+        }
+    },
+    "fruits" : [
+        {"name" : "Apple", "amount" : 10},
+        {"name" : "Grape", "amount" : 20},
+        {"name" : "Lemon", "amount" : 30}
+    ]
+}
+</textarea>
+</div>
+<div style="width:40%;float:left;margin:5%;">
+<p style="font-size:3em;margin:10px;">Template</p>
+<textarea id="template" style="width:100%;height:300px;border-radius:10px;" >
+<!-- Template -->
+<div><span>${message}</span></div>
+<ul data-render="${plugins}.each"><li>$val</li></ul>
+<div><h3>Dog</h3><dl>
+    <dt>walk</dt><dd>${creature.dog.walk}</dd>
+    <dt>speakable</dt><dd>${creature.dog.speakable}</dd>
+</dl></div>
+<div><span>${creature.dog.walk}</div>
+<div><h3>Human</h3><dl data-render="${creature.human}.each"><dt>$key</dt><dd>$val</dd></dl></div>
+</textarea>
+</div>
+</div>
+        <script>
+            $(function(){
+                var obj = JSON.parse($("#json").val().replace(/\n/g,""));
 
                 $("#json,#template").change(function(){
-                    $("#re5").render($("#template").val(), $("#json").val());
-                });
-
-
+                    $("#out").render($("#template").val(), obj);
+                }).change();
 
             });
         </script>
-        <div id="re1"></div>
-        <div id="re2"></div>
-        <div id="re3"></div>
-        <div id="re4"></div>
-        <div id="re5"></div>
+<div id="out" style="clear:both;margin:auto;border:3px solid gray;border-radius:10px;width:80%;text-align:left;height:100%;"></div>
     </body>
 </html>
