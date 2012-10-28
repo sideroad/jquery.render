@@ -10,9 +10,8 @@
     </head>
     <body>
         <b style="font-size:80px;position:absolute;top:42%;left:28%;" >jquery.render</b>
-        <script type="text/javascript">
-            $(document.body).ready(function(){
-                var obj = {
+        <textarea id="json" style="width:500px;height:300px;">
+            {
                     message:"Hello World!", 
                     title:"jQuery plugin", 
                     plugins:["jquery.ui","jquery.sidebar","jquery.textanimation","jquery.floatingmessage"],
@@ -32,19 +31,33 @@
                         {name : "Lemon", amount : 30}
                     ]
                     
-                };
+                }
+        </textarea>
+        <textarea id="template" style="width:500px;height:300px;" >
+            <div><h3>Human</h3><dl><each src='${creature.human}'><dt>$key</dt><dd>$val</dd></each></dl></div>
+        </textarea>
+
+        <script type="text/javascript">
+            $(document.body).ready(function(){
+                var obj = JSON.parse($("#json").val());
                 
                 
                 $("#re1").render("<h1>${message}</h1>",obj);
                 $("#re2").render("<h2>${title}</h2>",obj);
                 $("#re3").render("<ul><each src='${plugins}'><li>$val</li></each></ul>",obj);
-                $("#re4").render("<div><h3>Human</h3><dl><each src='${creature.human}'><dt>$key</dt><dd>$val</dd></each></dl></div>",obj);
-                $("#re5").render({
+                $("#re4").render({
                     url : "ren/demo.ren",
                     success : function(){
-                      window.alert("finish!")
+                      window.console && console.log("finish!")
                     }
                 },obj);
+
+                $("#json,#template").change(function(){
+                    $("#re5").render($("#template").val(), $("#json").val());
+                });
+
+
+
             });
         </script>
         <div id="re1"></div>

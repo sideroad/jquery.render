@@ -19,12 +19,14 @@ module.exports = function(grunt) {
     },
     min: {
       dist: {
-        src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
+        src: ['dist/<%= pkg.name %>.js'],
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
-    qunit: {
-      files: ['test/**/*.html']
+    testem: {
+      main: {
+        files: ['test/jquery.render.html']
+      }
     },
     lint: {
       files: ['grunt.js', 'src/**/*.js']
@@ -55,6 +57,8 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'qunit concat min');
+  grunt.loadNpmTasks('grunt-testem');
+  grunt.loadNpmTasks('grunt-yui-compressor');
+  grunt.registerTask('default', 'testem concat min');
 
 };
