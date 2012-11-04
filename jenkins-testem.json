@@ -1,4 +1,0 @@
-{
-  "browsers": ["PhantomJS"],
-  "files": ["test/jquery.render.html"]
-}

@@ -25,7 +25,9 @@ module.exports = function(grunt) {
     },
     testem: {
       main: {
-        files: ['test/jquery.render.html']
+        launch_in_ci: [ 'PhantomJS' ],
+        json: 'testem-multi.json',
+        tap: 'tests.tap'
       }
     },
     lint: {

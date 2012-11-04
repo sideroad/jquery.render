@@ -1,0 +1,21 @@
+TAP version 13
+ok 1 - test/jquery.render.html - PhantomJS jquery.render: property
+ok 2 - test/jquery.render.html - PhantomJS jquery.render: bind
+ok 3 - test/jquery.render.html - PhantomJS jquery.render: each
+ok 4 - test/jquery.render.html - PhantomJS jquery.render: in
+ok 5 - test/jquery.render.html - PhantomJS jquery.render: nested several manipulation
+ok 6 - test/jquery.render.html - PhantomJS jquery.render: escapeHTML
+ok 7 - test/jquery.render.html - PhantomJS jquery.render: raw
+ok 8 - test/jquery.render.html - PhantomJS jquery.render: ajax
+ok 9 - test/jquery.render.html - PhantomJS jquery.render: include
+ok 10 - test/jquery.render.html - PhantomJS jquery.render: word-setting-en
+ok 11 - test/jquery.render.html - PhantomJS jquery.render: word-setting-ja
+ok 12 - test/jquery.render.html - PhantomJS jquery.render: suffix-userAgent-Chrome
+ok 13 - test/jquery.render.html - PhantomJS jquery.render: suffix-userAgent-iPhone
+ok 14 - test/jquery.render.html - PhantomJS jquery.render: inception ( Local )
+ok 15 - test/jquery.render.html - PhantomJS jquery.render: seek ( Local )
+
+1..15
+# tests 15
+# pass 15
+# fail 0
