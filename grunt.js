@@ -71,6 +71,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-testem');
   grunt.loadNpmTasks('grunt-yui-compressor');
   grunt.loadNpmTasks('grunt-qunit-cov');
-  grunt.registerTask('default', 'testem concat min');
+  grunt.registerTask('default', 'testem qunit-cov concat min');
 
 };
