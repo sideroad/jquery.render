@@ -1,0 +1,1 @@
+<ul><each src='${fruits}'><li>${name} : ${amount}</li></each></ul>

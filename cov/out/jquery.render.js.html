@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .code {
+            white-space: pre;
+            font-family: courier new;
+            width: 100%;            
+        }
+        
+        .miss {
+            background-color: #FF0000;
+        }
+        
+        .hit {
+            background-color: #94FF7C;
+        }
+        
+        .undef {
+            background-color: #FFFFFF;
+        } 
+
+        .nottested {
+            background-color: #FFFF00;
+        }         
+    </style>
+</head>
+<body>
+
+<div class="code undef">/*!</div>
+<div class="code undef"> * jquery.render v1.2.4</div>
+<div class="code undef"> * http://sideroad.secret.jp/</div>
+<div class="code undef"> *</div>
+<div class="code undef"> * Template render plugin</div>
+<div class="code undef"> * </div>
+<div class="code undef"> * Copyright (c) 2011 sideroad</div>
+<div class="code undef"> *</div>
+<div class="code undef"> * Dual licensed under the MIT or GPL licenses.</div>
+<div class="code undef"> * Date: 2011-03-03</div>
+<div class="code undef"> * </div>
+<div class="code undef"> * @author sideroad</div>
+<div class="code undef"> * @requires jQuery</div>
+<div class="code undef"> * </div>
+<div class="code undef"> */</div>
+<div class="code undef"></div>
+<div class="code hit">(function( $ ) {</div>
+<div class="code hit">    var cache = {},</div>
+<div class="code undef">        word = {},</div>
+<div class="code undef">		suffix = "",</div>
+<div class="code undef">        isLoaded = {},</div>
+<div class="code undef">        isLoading = {},</div>
+<div class="code undef">        language = "en",</div>
+<div class="code undef">        seek = function( obj, keys ){</div>
+<div class="code hit">            if( !keys.length ) return obj;</div>
+<div class="code hit">            var key = keys.shift();</div>
+<div class="code hit">            return seek( obj[ key ], keys );</div>
+<div class="code undef">        },</div>
+<div class="code undef">        inception = function( obj, keys, val ){</div>
+<div class="code hit">            var key = keys.shift();</div>
+<div class="code undef">            </div>
+<div class="code hit">            if( !keys.length) {</div>
+<div class="code hit">                obj[ key ] = val;</div>
+<div class="code hit">                return obj;</div>
+<div class="code undef">            } else {</div>
+<div class="code hit">                if( !obj[ key ]) obj[key] = {};</div>
+<div class="code hit">                return inception( obj[ key ], keys, val );</div>
+<div class="code undef">            }            </div>
+<div class="code undef">        },</div>
+<div class="code undef">        currying = function(f){</div>
+<div class="code hit">            var slice = Array.prototype.slice,</div>
+<div class="code undef">                arg = slice.call(arguments);</div>
+<div class="code hit">            arg.shift();</div>
+<div class="code hit">            return function(){</div>
+<div class="code hit">                var _arg = slice.call(arguments);</div>
+<div class="code hit">                return f.apply(this, arg.concat(_arg));</div>
+<div class="code undef">            };</div>
+<div class="code undef">        },</div>
+<div class="code undef">		escapeHTML = function( s ){</div>
+<div class="code hit">            return String( s ).replace(/&/g, '&amp;').replace(/&lt;/g, '&lt;').replace(/&gt;/g, '&gt;');</div>
+<div class="code undef">        },</div>
+<div class="code undef">        objectReplace = function( obj, word, isRaw, key ){</div>
+<div class="code hit">            var index = key.match( /\[(\d+)\]/ );</div>
+<div class="code hit">            if ( index && index[ 1 ] ) {</div>
+<div class="code hit">                key = index[ 1 ];</div>
+<div class="code undef">            }</div>
+<div class="code hit">            return isRaw ? obj[ key ] : escapeHTML( obj[ key ] );</div>
+<div class="code undef">        },</div>
+<div class="code undef">        keyValReplace = function( key, val, word, isRaw, type ){</div>
+<div class="code hit">            var text = ( type == "val" ) ? val : key;</div>
+<div class="code hit">            return isRaw ? text : escapeHTML( text );</div>
+<div class="code undef">        },</div>
+<div class="code undef">        wordReplace = function( text ){</div>
+<div class="code hit">            var words = word[ language ];</div>
+<div class="code hit">            return text.replace(/\$w\{([^\}]+)\}/g, function( text, key ){</div>
+<div class="code hit">                return escapeHTML( words[ key ] );</div>
+<div class="code undef">            });</div>
+<div class="code undef">        },</div>
+<div class="code undef">        each = function( template, source ) {</div>
+<div class="code hit">            template = $("&lt;div&gt;"+template+"</div>");</div>
+<div class="code undef">            </div>
+<div class="code hit">            template.find("[data-render]").each(function(){</div>
+<div class="code hit">                    var elem = $(this),</div>
+<div class="code undef">                    data = elem.data("render").match(/^\$(?:\{|%7B)(.+)(?:\}|%7D)\.(\w+)$/),</div>
+<div class="code undef">                    method = data[2],</div>
+<div class="code undef">                    key = data[1],</div>
+<div class="code undef">                    val = ( key == "this" || key == "" ) ? source : </div>
+<div class="code undef">                          seek( source, key.replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) ),</div>
+<div class="code undef">                    i = 0,</div>
+<div class="code undef">                    length,</div>
+<div class="code undef">                    childVal,</div>
+<div class="code undef">                    child,</div>
+<div class="code undef">                    childText,</div>
+<div class="code undef">                    text = "";</div>
+<div class="code undef">                </div>
+<div class="code hit">                elem.removeAttr("data-render");</div>
+<div class="code hit">                child = (method == "in") ? elem.html() :</div>
+<div class="code undef">                        (method == "each") ? elem[0].outerHTML : </div>
+<div class="code undef">                        (method == "bind") ? elem[0].outerHTML : "";</div>
+<div class="code undef">                </div>
+<div class="code hit">                if(method == "bind"){</div>
+<div class="code hit">                    childText = child;</div>
+<div class="code hit">                    if( $("&lt;div&gt;"+child+"</div>").find("[data-render]").length ){</div>
+<div class="code hit">                        childText = each( child, val );</div>
+<div class="code undef">                    }</div>
+<div class="code hit">                    text = childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, val))</div>
+<div class="code undef">                                    .replace( /\$(r?)(val|key)/g, currying( keyValReplace, key, val ));</div>
+<div class="code undef">                } else {</div>
+<div class="code hit">                    if( val instanceof Array ) {</div>
+<div class="code hit">                        length = val.length;</div>
+<div class="code hit">                        for( i = 0; i&lt;length; i++ ) {</div>
+<div class="code hit">                            childVal = val[ i ];</div>
+<div class="code hit">                            childText = child;</div>
+<div class="code hit">                            if( $("&lt;div&gt;"+child+"</div>").find("[data-render]").length ){</div>
+<div class="code hit">                                childText = each( childText, childVal );</div>
+<div class="code undef">                            }</div>
+<div class="code hit">                            text += childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal ))</div>
+<div class="code undef">                                             .replace( /\$(r?)(val)/g, currying( keyValReplace, null, childVal ));</div>
+<div class="code undef">                        }</div>
+<div class="code hit">                    } else if( typeof val === "object" ) {</div>
+<div class="code hit">                        for( key in val ) {</div>
+<div class="code hit">                            childVal = val[ key ];</div>
+<div class="code hit">                            childText = child;</div>
+<div class="code hit">                            if( $("&lt;div&gt;"+child+"</div>").find("[data-render]").length ){</div>
+<div class="code hit">                                childText = each( childText, childVal );</div>
+<div class="code undef">                            }</div>
+<div class="code hit">                            text += childText.replace( /\$(r?){([^\}]+)}/g, currying( objectReplace, childVal))</div>
+<div class="code undef">                                             .replace( /\$(r?)(val|key)/g, currying( keyValReplace, key, childVal ));</div>
+<div class="code undef">                        }</div>
+<div class="code undef">                    }</div>
+<div class="code undef">                }</div>
+<div class="code hit">                method == "in" ? elem.html(text) : </div>
+<div class="code undef">                method == "each" ? elem.replaceWith( text ) : </div>
+<div class="code undef">                method == "bind" ? elem.replaceWith( text ) : "";</div>
+<div class="code undef">                </div>
+<div class="code undef">            });</div>
+<div class="code undef">            </div>
+<div class="code hit">            return template.html();</div>
+<div class="code undef">            </div>
+<div class="code undef">        },</div>
+<div class="code undef">        bind = function( template, source ){</div>
+<div class="code undef">            </div>
+<div class="code hit">            template = each( template, source );</div>
+<div class="code hit">            var text = template.replace( /\$(r?)\{([^\}]+)\}/g, function( word, isRaw, key ){</div>
+<div class="code hit">                var text = seek( source, key.replace(/^this/, "" ).replace(/(\[(\d+)\])/g,".$2").replace(/^\./,"").split( "." ) );</div>
+<div class="code hit">                return isRaw ? text : escapeHTML( text );</div>
+<div class="code undef">            });</div>
+<div class="code undef">                </div>
+<div class="code hit">            return ( isLoaded[ language ] ) ? wordReplace( text ) : text;</div>
+<div class="code undef">            </div>
+<div class="code undef">        };</div>
+<div class="code undef">    </div>
+<div class="code undef">    /**</div>
+<div class="code undef">     * $.fn.render</div>
+<div class="code undef">     * Replace template string by the source object</div>
+<div class="code undef">     * The template string is taken by Ajax when the first parameter is object.</div>
+<div class="code undef">     * @namespace</div>
+<div class="code undef">     * @param {String||Object} template string or Ajax settings</div>
+<div class="code undef">     * @param {Object} source object</div>
+<div class="code undef">     * @returns {Object} jQuery element object</div>
+<div class="code undef">     */</div>
+<div class="code hit">    $.fn.render = function( template, source ){</div>
+<div class="code hit">        var ajax = false,</div>
+<div class="code undef">            baseUrl,</div>
+<div class="code undef">            callback;</div>
+<div class="code undef">        </div>
+<div class="code hit">        if ( typeof template == "object" && ! ( template instanceof String ) ) {</div>
+<div class="code hit">            ajax = template;</div>
+<div class="code undef">        }</div>
+<div class="code undef"></div>
+<div class="code hit">        if( ajax ){</div>
+<div class="code hit">            baseUrl = ajax.url + suffix;</div>
+<div class="code hit">            callback = ajax.success;</div>
+<div class="code undef">            </div>
+<div class="code hit">            return this.each( function(){</div>
+<div class="code hit">                var elem = $(this),</div>
+<div class="code undef">                    cnt = 1,</div>
+<div class="code undef">                    replace = function(template){</div>
+<div class="code hit">                        template = $("&lt;div&gt;"+template+"</div>");</div>
+<div class="code hit">                        template.find("[data-include]").each(function(){</div>
+<div class="code hit">                            var child = $(this);</div>
+<div class="code hit">                            child.html(cache[child.data("include")]);</div>
+<div class="code hit">                            child.removeAttr("data-include");</div>
+<div class="code undef">                        });</div>
+<div class="code undef">                        </div>
+<div class="code hit">                        return template.find("[data-include]").length ? replace( template.html() ) : template.html();</div>
+<div class="code undef">                        </div>
+<div class="code undef">                    },</div>
+<div class="code undef">                    getTemplate = function(url){</div>
+<div class="code undef">        </div>
+<div class="code hit">                        $.ajax( $.extend( true, </div>
+<div class="code undef">                            ajax, {</div>
+<div class="code undef">                                url : url,</div>
+<div class="code undef">                                dataType : "text",</div>
+<div class="code undef">                                success : function( template ){</div>
+<div class="code hit">                                    var child = $("&lt;div&gt;"+template+"</div>").find("[data-include]");</div>
+<div class="code hit">                                    cnt = cnt + child.length -1;</div>
+<div class="code undef">                                    </div>
+<div class="code hit">                                    cache[ url ] = template;</div>
+<div class="code hit">                                    if(cnt){</div>
+<div class="code hit">                                        child.each(function(){                                       </div>
+<div class="code hit">                                            getTemplate($(this).data("include")); </div>
+<div class="code undef">                                        });</div>
+<div class="code undef">                                    } else {</div>
+<div class="code hit">                                        elem.html( bind( replace( cache[ baseUrl ] ), source ) );</div>
+<div class="code hit">                                        if ( callback ) callback();    </div>
+<div class="code undef">                                    }</div>
+<div class="code undef">                                    </div>
+<div class="code undef">                                }</div>
+<div class="code undef">                            }</div>
+<div class="code undef">                        ));</div>
+<div class="code undef">                    };</div>
+<div class="code hit">                if( cache[ baseUrl ] ) {</div>
+<div class="code hit">                    elem.html( bind( replace( cache[ baseUrl ] ), source ) );</div>
+<div class="code hit">                    if ( callback ) callback();</div>
+<div class="code undef">                } else {</div>
+<div class="code hit">                    getTemplate(baseUrl);</div>
+<div class="code undef">                }</div>
+<div class="code undef">            });</div>
+<div class="code undef">        } else {</div>
+<div class="code hit">            return this.each( function(){</div>
+<div class="code hit">                var elem = $(this),</div>
+<div class="code undef">				    text = bind( template, source );</div>
+<div class="code hit">                elem.html( text );</div>
+<div class="code undef">            } );</div>
+<div class="code undef">        }</div>
+<div class="code undef">    };</div>
+<div class="code undef">    </div>
+<div class="code undef"></div>
+<div class="code undef">    /**</div>
+<div class="code undef">     * $.word</div>
+<div class="code undef">     * Load a word setting file</div>
+<div class="code undef">     * Language is automatically taken by navigator object, which you omit a set language.</div>
+<div class="code undef">     * </div>
+<div class="code undef">     * @namespace</div>
+<div class="code undef">     * @param {Object} word files URL</div>
+<div class="code undef">     *     exp)</div>
+<div class="code undef">     *     { en : "word.en", ja : "word.ja"}</div>
+<div class="code undef">     * @param {String} Default Language ( Omittable )</div>
+<div class="code undef">     * @param {String} Fixed Language ( Omittable )</div>
+<div class="code undef">     * @param {Function} Callback function ( Omittable )</div>
+<div class="code undef">     */</div>
+<div class="code hit">    $.word = function( urls, def, fixed, callback ){</div>
+<div class="code hit">        var lang = fixed || (navigator.browserLanguage || navigator.language || navigator.userLanguage).substr(0,2);</div>
+<div class="code hit">        language = lang = ( urls[ lang ] ) ? lang : </div>
+<div class="code undef">                                   ( urls[def] ) ? def : "en";</div>
+<div class="code undef">        </div>
+<div class="code hit">        if( word[ lang ] ) {</div>
+<div class="code miss">            return;</div>
+<div class="code undef">        } else {</div>
+<div class="code hit">            isLoading[ lang ] = true;        </div>
+<div class="code hit">            $.ajax({</div>
+<div class="code undef">                url : urls[ lang ],</div>
+<div class="code undef">                dataType : "text",</div>
+<div class="code undef">                success : function( text ){</div>
+<div class="code hit">                    var settings = text.split(/\n/),</div>
+<div class="code undef">                        length = settings.length,</div>
+<div class="code undef">                        i,</div>
+<div class="code undef">                    keyVal = [];</div>
+<div class="code hit">                word[ lang ] = {};</div>
+<div class="code hit">                for( i = 0; i &lt; length; i ++ ){</div>
+<div class="code hit">                    keyVal = settings[ i ].split(/^([^=]+)=(.+)$/);</div>
+<div class="code hit">                    word[ lang ][ keyVal[ 1 ] ] = keyVal[ 2 ];</div>
+<div class="code undef">                }</div>
+<div class="code hit">                isLoading[ lang ] = false;</div>
+<div class="code hit">                isLoaded[ lang ] = true;</div>
+<div class="code hit">                callback();</div>
+<div class="code undef">            }</div>
+<div class="code undef">        });</div>
+<div class="code undef">        }</div>
+<div class="code undef">    };</div>
+<div class="code undef">	</div>
+<div class="code undef">	/**</div>
+<div class="code undef">	 * Set render file suffix which called ajax render request</div>
+<div class="code undef">	 * @namespace</div>
+<div class="code undef">     * @param {Object} userAgents setting</div>
+<div class="code undef">     *     exp)</div>
+<div class="code undef">     *     { ".an" : /Android/, ".ip" : /iPhone|iPad/ }</div>
+<div class="code undef">	 */</div>
+<div class="code hit">	$.renderSuffix = function( userAgent ){</div>
+<div class="code hit">		userAgent = userAgent || {};</div>
+<div class="code hit">		var key = null,</div>
+<div class="code undef">			ua = $.__render__.userAgent;</div>
+<div class="code undef">		</div>
+<div class="code hit">		for( key in userAgent ){</div>
+<div class="code hit">			if( userAgent[ key ].test( ua ) ){</div>
+<div class="code hit">				suffix =  key;</div>
+<div class="code undef">			}</div>
+<div class="code undef">		}</div>
+<div class="code undef">	};</div>
+<div class="code undef">	</div>
+<div class="code undef">	/**</div>
+<div class="code undef">	 * Clear suffix settings</div>
+<div class="code undef">	 * @namespace</div>
+<div class="code undef">	 * </div>
+<div class="code undef">	 */</div>
+<div class="code hit">	$.clearSuffix = function(){</div>
+<div class="code hit">	    suffix = "";</div>
+<div class="code undef">	};</div>
+<div class="code undef">    </div>
+<div class="code undef">    /**</div>
+<div class="code undef">     * Export local value for Unit testing</div>
+<div class="code undef">     */</div>
+<div class="code hit">    $.__render__ = {</div>
+<div class="code undef">            seek : seek,</div>
+<div class="code undef">            inception : inception,</div>
+<div class="code undef">			escapeHTML : escapeHTML,</div>
+<div class="code undef">            word : word,</div>
+<div class="code undef">			userAgent : navigator.userAgent</div>
+<div class="code undef">    };</div>
+<div class="code undef"></div>
+<div class="code undef">    </div>
+<div class="code undef">})( jQuery );</div>
+<div class="code undef"></div>
+
+
+</body>
+</html>

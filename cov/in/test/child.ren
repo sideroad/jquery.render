@@ -1,0 +1,6 @@
+<dl>
+<each src='${this}'>
+<dt>name</dt><dd>$key</dd>
+<include src='${this}' href='grandchild.ren'>
+</each>
+</dl>

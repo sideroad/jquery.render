@@ -1,0 +1,1 @@
+<div><p data-render='${this}.each'>$key is $val.</p></div>

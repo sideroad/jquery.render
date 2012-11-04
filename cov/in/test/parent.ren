@@ -1,0 +1,5 @@
+<div>im parent</div>
+${this}.each({
+<h1>$key</h1>
+$val.inc({child.ren});
+});
