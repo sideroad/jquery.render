@@ -34,7 +34,7 @@ module.exports = function(grunt) {
       test:{
         minimum: 0.9,
         srcDir: 'src',
-        depDirs: ['lib', 'ren', 'css'],
+        depDirs: ['lib', 'test', 'ren'],
         outDir: 'cov',
         testFiles: ['test/*.html']
       }
