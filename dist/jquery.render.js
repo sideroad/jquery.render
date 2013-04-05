@@ -1,7 +1,3 @@
-/*! jQuery Render - v1.2.4 - 2012-11-04
-* https://github.com/sideroad/jquery.render
-* Copyright (c) 2012 sideroad; Licensed MIT, GPL */
-
 /*!
  * jquery.render v1.2.4
  * http://sideroad.secret.jp/

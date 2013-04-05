@@ -3,31 +3,31 @@ module.exports = function(grunt) {
 
   // Project configuration.
   grunt.initConfig({
-    pkg: '<json:package.json>',
-    meta: {
-      banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
-        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-        '<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
-        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-        ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
-    },
+    pkg: grunt.file.readJSON('package.json'),
     concat: {
       dist: {
-        src: ['<banner:meta.banner>', '<file_strip_banner:src/<%= pkg.name %>.js>'],
+        src: ['src/<%= pkg.name %>.js'],
         dest: 'dist/<%= pkg.name %>.js'
       }
     },
     min: {
       dist: {
-        src: ['dist/<%= pkg.name %>.js'],
-        dest: 'dist/<%= pkg.name %>.min.js'
+        files: {
+          'dist/<%= pkg.name %>.min.js': ['dist/<%= pkg.name %>.js']
+        }
       }
     },
     testem: {
-      main: {
+      options:{
         launch_in_ci: [ 'PhantomJS' ],
-        json: 'testem-multi.json',
         tap: 'tests.tap'
+      },
+      main: {
+        files: {
+          test: [
+            "test/*.html"
+          ]
+        }
       }
     },
     'qunit-cov': {
@@ -68,6 +68,10 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'testem qunit-cov concat min');
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-yui-compressor');
+  grunt.loadNpmTasks('grunt-qunit-cov');
+  grunt.loadNpmTasks('grunt-testem');
+  grunt.registerTask('default', ['testem', 'qunit-cov', 'concat', 'min']);
 
 };
