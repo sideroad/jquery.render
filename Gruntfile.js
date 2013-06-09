@@ -19,12 +19,11 @@ module.exports = function(grunt) {
     },
     testem: {
       options:{
-        launch_in_ci: [ 'PhantomJS' ],
-        tap: 'tests.tap'
+        launch_in_ci: [ 'PhantomJS' ]
       },
       main: {
         files: {
-          test: [
+          'tests.tap': [
             "test/*.html"
           ]
         }
