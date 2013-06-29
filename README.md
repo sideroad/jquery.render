@@ -1,7 +1,13 @@
+##Install 
 
-### Install 
+###Jam
 ```sh
 jam install jquery.render
+```
+
+###Bower
+```sh
+bower install jquery.render
 ```
 
 ### Usage
